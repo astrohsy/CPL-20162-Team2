@@ -13,3 +13,17 @@
 * 내 소스를 github로 업데이트 할 때
     > git commit -am "수정된 내용" <br />
     > git push master origin
+
+* git이 없다고 뜰 경우, https://git-scm.com/downloads 에서 다운로드를 받는다.
+
+#ScanYou Team 수행계획
+
+2016/09/12 (전 팀원)
+> 박순용 교수님 연구실에서 논문 주제 및 응용 부분에 대한 회의 진행
+
+2016/09/11 ~ 2016/09/18 (담당자 : 이호승)
+> 3D-Model을 보여줄 수 있는 웹페이지 생성.
+
+다른 팀원들은 여기에 자기 업무 수행 계획 업뎃 바람.
+
+github의 issue기능을 활용한다.
