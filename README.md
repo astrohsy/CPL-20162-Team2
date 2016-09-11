@@ -2,6 +2,8 @@
 
 * 같은 파일을 같이 작업하지 않는다.
 
+* 새로운 작업하기 전에는 '꼭' github로 부터 pull을 받는다. (Console에서 "git pull" 입력)
+
 * 시작할 때
     > git clone https://github.com/astrohsy/CPL-20162-Team2.git
 
