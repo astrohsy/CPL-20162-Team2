@@ -11,7 +11,7 @@
     > git pull
 
 * 내 소스를 github로 업데이트 할 때 <br />
-    > git add .
+    > git add . <br />
     > git commit -am "수정된 내용" <br />
     > git push master origin
 
