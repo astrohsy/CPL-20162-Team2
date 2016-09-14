@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_calibration", "test_calibration\test_calibration.vcxproj", "{317C9C0E-7E1F-4999-83DB-331190399901}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{317C9C0E-7E1F-4999-83DB-331190399901}.Debug|Win32.ActiveCfg = Debug|Win32
+		{317C9C0E-7E1F-4999-83DB-331190399901}.Debug|Win32.Build.0 = Debug|Win32
+		{317C9C0E-7E1F-4999-83DB-331190399901}.Release|Win32.ActiveCfg = Release|Win32
+		{317C9C0E-7E1F-4999-83DB-331190399901}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
