@@ -8,8 +8,8 @@ window.addEventListener("load", function () {
     var view = document.getElementById("view");
     view.appendChild(renderer.domElement);
 
-    var camera = new THREE.PerspectiveCamera(45, w / h, 1, 1000);
-    camera.position.set(0, 0, 50);
+    var camera = new THREE.PerspectiveCamera(45, w / h, 100, 100000);
+    camera.position.set(0, 50, 50);
     var controls = new THREE.TrackballControls(camera, view);
 
     var scene = new THREE.Scene();
