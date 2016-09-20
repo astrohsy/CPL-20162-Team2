@@ -20,6 +20,7 @@ github의 issue기능을 활용한다.
 | :-------------: |:-------------:|
 | 김동호      | /3d-printing |
 | 김성현      | /calibration      |
+| 김성현      | /camera      |
 | 김미수      | /meshing         |
 | 이호승      | /intergrated-sw     |
 | 공통      | /     |
