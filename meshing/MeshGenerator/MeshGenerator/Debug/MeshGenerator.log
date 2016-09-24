@@ -1,3 +1,4 @@
-﻿  MeshGeneratorMain.cpp
-  MeshGenerator.vcxproj -> C:\Users\Melange\Documents\Visual Studio 2015\Projects\MeshGenerator\Debug\MeshGenerator.exe
-  MeshGenerator.vcxproj -> C:\Users\Melange\Documents\Visual Studio 2015\Projects\MeshGenerator\Debug\MeshGenerator.pdb (Full PDB)
+﻿  MeshGenerator.cpp
+c:\users\w3m_e\cpl-20162-team2\meshing\meshgenerator\meshgenerator\meshgenerator.cpp(29): warning C4101: 't2' :참조되지 않은 지역 변수입니다.
+  MeshGenerator.vcxproj -> C:\Users\w3m_e\CPL-20162-Team2\meshing\MeshGenerator\Debug\MeshGenerator.exe
+  MeshGenerator.vcxproj -> C:\Users\w3m_e\CPL-20162-Team2\meshing\MeshGenerator\Debug\MeshGenerator.pdb (Full PDB)

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MeshGeneratorMain.cpp" />
+    <ClCompile Include="MeshGenerator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{49757E16-CD96-4587-80DB-5D3C36C9BB8E}</ProjectGuid>
