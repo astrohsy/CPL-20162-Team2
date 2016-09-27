@@ -1,4 +1,4 @@
-﻿빌드 시작: 2016-09-28 오전 2:01:11
+﻿빌드 시작: 2016-09-28 오전 3:52:44
      1>2 노드의 "C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\camera\camera.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt CameraControl.cpp
@@ -13,4 +13,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:01.83
+경과 시간: 00:00:02.90
