@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "CameraControl.h"
 #include "EDSDK.h"
 #include "EDSDKTypes.h"
@@ -133,7 +134,11 @@ BOOL CCameraControlApp::InitInstance()
 		//m_pMainWnd = &view;
 		//INT_PTR nResponse = view.DoModal();
 
+		_controller->run();
 	}
+
+	std::cout << _model << std::endl;
+
 	/*
 	//Release Camera
 	if( camera != NULL )

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <thread>
+#include <future>
 
 #include "EDSDK.h"
 #include "EDSDKTypes.h"
@@ -12,9 +14,17 @@
 
 using namespace std;
 
-void take_picture(CCameraControlApp theApp){
+bool threadExit;
+
+bool printingPicture(){
+	while (1){
+		if (threadExit)
+			break;
 
 
+	}
+
+	return true;
 }
 
 int main()
@@ -23,17 +33,25 @@ int main()
 	theApp.InitInstance();
 
 	string doing;
+	threadExit = false;
+
+	auto pthread = async(&printingPicture);
 
 	while (1){ 
 		cin >> doing;
-
 		if (doing == "t"){
-			theApp._controller
+			cout << "Take picture" << endl;
+			(*theApp._controller).actionPerformed(*new ActionEvent("TakePicture"));
 		}
 
-		else if (doing == "z")
+		else if (doing == "z"){
+			cout << "Exit program" << endl;
+			threadExit = true;
 			break;
+		}
 	}
+
+	bool check = pthread.get();
 
 	theApp.release();
 }

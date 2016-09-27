@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "EDSDK.h"
 #include "CameraModel.h"
 #include "Processor.h"
@@ -77,7 +79,6 @@ public:
 	void actionPerformed(const ActionEvent& event)
 	{
 		std::string command = event.getActionCommand();
-
 
 		if ( command == "opensession" )
 		{

@@ -1,8 +1,8 @@
-﻿빌드 시작: 2016-09-27 오후 9:12:40
+﻿빌드 시작: 2016-09-28 오전 2:01:11
      1>2 노드의 "C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\camera\camera.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt camera.cpp
-         camera.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt CameraControl.cpp
+         CameraControl.cpp
      1>c:\users\kshy9\cpl\cpl-20162-team2\camera\camera\camera\camera\cameramodel.h(86): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : 'strcpy' 선언을 참조하십시오.
        Link:
@@ -13,4 +13,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:02.19
+경과 시간: 00:00:01.83
