@@ -40,9 +40,10 @@ int main(void)
 	sm = PXCSenseManager::CreateInstance();
 	if (sm == 0)
 	{
-		wprintf_s(L"Unable to create the PXCSenseManager\n");		return 1;
+		wprintf_s(L"Unable to create the PXCSenseManager\n");
+		return 1;
 	}
-	sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480);
+	//sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480);
 	sm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, 320, 240, 60);
 
 	if (sm->Init() != PXC_STATUS_NO_ERROR)
@@ -68,12 +69,12 @@ int main(void)
 		PXCCapture::Sample* sample = sm->QuerySample();
 
 		// sample에서 이미지 받기
-		colorlm = sample->color;
+		//colorlm = sample->color;
 		depthlm = sample->depth;
 
 		// 렌더링
-		if (!renderColor->RenderFrame(colorlm))
-			break;
+		/*if (!renderColor->RenderFrame(colorlm))
+			break;*/
 		if (!renderDepth->RenderFrame(depthlm))
 			break;
 		t1 = clock();
