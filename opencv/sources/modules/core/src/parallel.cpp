@@ -80,7 +80,6 @@
    4. HAVE_GCD         - system wide, used automatically        (APPLE only)
    5. WINRT            - system wide, used automatically        (Windows RT only)
    6. HAVE_CONCURRENCY - part of runtime, used automatically    (Windows only - MSVS 10, MSVS 11)
-   7. HAVE_PTHREADS_PF - pthreads if available
 */
 
 #if defined HAVE_TBB
@@ -107,7 +106,7 @@
     #elif defined HAVE_GCD
         #include <dispatch/dispatch.h>
         #include <pthread.h>
-    #elif defined WINRT && _MSC_VER < 1900
+    #elif defined WINRT
         #include <ppltasks.h>
     #elif defined HAVE_CONCURRENCY
         #include <ppl.h>
@@ -126,20 +125,14 @@
 #  define CV_PARALLEL_FRAMEWORK "winrt-concurrency"
 #elif defined HAVE_CONCURRENCY
 #  define CV_PARALLEL_FRAMEWORK "ms-concurrency"
-#elif defined HAVE_PTHREADS_PF
+#elif defined HAVE_PTHREADS
 #  define CV_PARALLEL_FRAMEWORK "pthreads"
 #endif
 
 namespace cv
 {
     ParallelLoopBody::~ParallelLoopBody() {}
-#ifdef HAVE_PTHREADS_PF
-    void parallel_for_pthreads(const cv::Range& range, const cv::ParallelLoopBody& body, double nstripes);
-    size_t parallel_pthreads_get_threads_num();
-    void parallel_pthreads_set_threads_num(int num);
-#endif
 }
-
 
 namespace
 {
@@ -238,7 +231,7 @@ public:
     }
 
     SchedPtr() : sched_(0) {}
-    ~SchedPtr() {}
+    ~SchedPtr() { *this = 0; }
 };
 static SchedPtr pplScheduler;
 
@@ -307,8 +300,8 @@ void cv::parallel_for_(const cv::Range& range, const cv::ParallelLoopBody& body,
             Concurrency::CurrentScheduler::Detach();
         }
 
-#elif defined HAVE_PTHREADS_PF
-
+#elif defined HAVE_PTHREADS
+        void parallel_for_pthreads(const Range& range, const ParallelLoopBody& body, double nstripes);
         parallel_for_pthreads(range, body, nstripes);
 
 #else
@@ -366,7 +359,9 @@ int cv::getNumThreads(void)
         ? Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors()
         : pplScheduler->GetNumberOfVirtualProcessors());
 
-#elif defined HAVE_PTHREADS_PF
+#elif defined HAVE_PTHREADS
+
+        size_t parallel_pthreads_get_threads_num();
 
         return parallel_pthreads_get_threads_num();
 
@@ -427,7 +422,9 @@ void cv::setNumThreads( int threads )
                        Concurrency::MaxConcurrency, threads-1));
     }
 
-#elif defined HAVE_PTHREADS_PF
+#elif defined HAVE_PTHREADS
+
+    void parallel_pthreads_set_threads_num(int num);
 
     parallel_pthreads_set_threads_num(threads);
 
@@ -453,8 +450,6 @@ int cv::getThreadNum(void)
     return 0;
 #elif defined HAVE_CONCURRENCY
     return std::max(0, (int)Concurrency::Context::VirtualProcessorId()); // zero for master thread, unique number for others but not necessary 1,2,3,...
-#elif defined HAVE_PTHREADS_PF
-    return (int)(size_t)(void*)pthread_self(); // no zero-based indexing
 #else
     return 0;
 #endif

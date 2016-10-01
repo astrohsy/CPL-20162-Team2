@@ -231,7 +231,7 @@ void destination(int event, int x, int y, int, void*)
         if(maxxd > im1.size().width || maxyd > im1.size().height || minxd < 0 || minyd < 0)
         {
             cout << "Index out of range" << endl;
-            exit(1);
+            exit(0);
         }
 
         final1 = Mat::zeros(img2.size(),CV_8UC3);
@@ -322,12 +322,12 @@ int main()
         if(img0.empty())
         {
             cout << "Source Image does not exist" << endl;
-            exit(2);
+            exit(0);
         }
         if(img2.empty())
         {
             cout << "Destination Image does not exist" << endl;
-            exit(2);
+            exit(0);
         }
 
         channel = img0.channels();
@@ -370,7 +370,7 @@ int main()
         if(img0.empty())
         {
             cout << "Source Image does not exist" << endl;
-            exit(2);
+            exit(0);
         }
 
         res1 = Mat::zeros(img0.size(),CV_8UC1);
@@ -400,7 +400,7 @@ int main()
         if(img0.empty())
         {
             cout << "Source Image does not exist" << endl;
-            exit(2);
+            exit(0);
         }
 
         res1 = Mat::zeros(img0.size(),CV_8UC1);
@@ -433,7 +433,7 @@ int main()
         if(img0.empty())
         {
             cout << "Source Image does not exist" << endl;
-            exit(2);
+            exit(0);
         }
 
         res1 = Mat::zeros(img0.size(),CV_8UC1);
@@ -448,7 +448,7 @@ int main()
     else
     {
         cout << "Wrong Option Choosen" << endl;
-        exit(1);
+        exit(0);
     }
 
     for(;;)
@@ -541,7 +541,7 @@ int main()
             imwrite("cloned.png",blend);
         }
         else if(key == 'q')
-            break;
+            exit(0);
     }
-    return 0;
+    waitKey(0);
 }

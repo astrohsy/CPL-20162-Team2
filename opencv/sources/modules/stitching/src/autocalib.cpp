@@ -41,19 +41,19 @@
 //M*/
 
 #include "precomp.hpp"
-#include "opencv2/core/hal/hal.hpp"
 
 using namespace cv;
 
 namespace {
 
-static inline bool decomposeCholesky(double* A, size_t astep, int m)
+template<typename _Tp> static inline bool
+decomposeCholesky(_Tp* A, size_t astep, int m)
 {
-    if (!hal::Cholesky64f(A, astep, m, 0, 0, 0))
+    if (!hal::Cholesky(A, astep, m, 0, 0, 0))
         return false;
     astep /= sizeof(A[0]);
     for (int i = 0; i < m; ++i)
-        A[i*astep + i] = (double)(1./A[i*astep + i]);
+        A[i*astep + i] = (_Tp)(1./A[i*astep + i]);
     return true;
 }
 

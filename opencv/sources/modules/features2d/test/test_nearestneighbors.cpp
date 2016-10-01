@@ -67,13 +67,13 @@ protected:
     virtual void run( int start_from );
     virtual void createModel( const Mat& data ) = 0;
     virtual int findNeighbors( Mat& points, Mat& neighbors ) = 0;
-    virtual int checkGetPoints( const Mat& data );
+    virtual int checkGetPoins( const Mat& data );
     virtual int checkFindBoxed();
     virtual int checkFind( const Mat& data );
     virtual void releaseModel() = 0;
 };
 
-int NearestNeighborTest::checkGetPoints( const Mat& )
+int NearestNeighborTest::checkGetPoins( const Mat& )
 {
    return cvtest::TS::OK;
 }
@@ -127,11 +127,11 @@ int NearestNeighborTest::checkFind( const Mat& data )
 void NearestNeighborTest::run( int /*start_from*/ ) {
     int code = cvtest::TS::OK, tempCode;
     Mat desc( featuresCount, dims, CV_32FC1 );
-    ts->get_rng().fill( desc, RNG::UNIFORM, minValue, maxValue );
+    randu( desc, Scalar(minValue), Scalar(maxValue) );
 
     createModel( desc );
 
-    tempCode = checkGetPoints( desc );
+    tempCode = checkGetPoins( desc );
     if( tempCode != cvtest::TS::OK )
     {
         ts->printf( cvtest::TS::LOG, "bad accuracy of GetPoints \n" );
@@ -161,7 +161,7 @@ void NearestNeighborTest::run( int /*start_from*/ ) {
 class CV_FlannTest : public NearestNeighborTest
 {
 public:
-    CV_FlannTest() : NearestNeighborTest(), index(NULL) { }
+    CV_FlannTest() {}
 protected:
     void createIndex( const Mat& data, const IndexParams& params );
     int knnSearch( Mat& points, Mat& neighbors );
@@ -172,9 +172,6 @@ protected:
 
 void CV_FlannTest::createIndex( const Mat& data, const IndexParams& params )
 {
-    // release previously allocated index
-    releaseModel();
-
     index = new Index( data, params );
 }
 
@@ -241,11 +238,7 @@ int CV_FlannTest::radiusSearch( Mat& points, Mat& neighbors )
 
 void CV_FlannTest::releaseModel()
 {
-    if (index)
-    {
-        delete index;
-        index = NULL;
-    }
+    delete index;
 }
 
 //---------------------------------------

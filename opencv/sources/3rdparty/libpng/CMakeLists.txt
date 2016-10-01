@@ -3,23 +3,10 @@
 #
 # ----------------------------------------------------------------------------
 
-if(ENABLE_NEON)
-  project(${PNG_LIBRARY} C ASM)
+if(NEON)
+  project(${PNG_LIBRARY} ASM)
 else()
-  project(${PNG_LIBRARY} C)
-endif()
-
-if(NOT WIN32)
-  find_library(M_LIBRARY
-    NAMES m
-    PATHS /usr/lib /usr/local/lib
-  )
-  if(NOT M_LIBRARY)
-    message(STATUS "math lib 'libm' not found; floating point support disabled")
-  endif()
-else()
-  # not needed on windows
-  set(M_LIBRARY "")
+  project(${PNG_LIBRARY})
 endif()
 
 ocv_include_directories("${CMAKE_CURRENT_SOURCE_DIR}" ${ZLIB_INCLUDE_DIRS})
@@ -27,15 +14,16 @@ ocv_include_directories("${CMAKE_CURRENT_SOURCE_DIR}" ${ZLIB_INCLUDE_DIRS})
 file(GLOB lib_srcs *.c)
 file(GLOB lib_hdrs *.h)
 
-
-if(ENABLE_NEON)
-  list(APPEND lib_srcs arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c)
-  add_definitions(-DPNG_ARM_NEON_OPT=2)
+if(NEON AND ARM)
+  list(APPEND lib_srcs arm/filter_neon.S)
+  add_definitions(-DPNG_ARM_NEON)
 endif()
 
 # ----------------------------------------------------------------------------------
 #         Define the library target:
 # ----------------------------------------------------------------------------------
+
+add_definitions(-DPNG_CONFIGURE_LIBPNG)
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -55,8 +43,6 @@ ocv_warnings_disable(CMAKE_C_FLAGS -Wcast-align)
 set_target_properties(${PNG_LIBRARY}
   PROPERTIES OUTPUT_NAME ${PNG_LIBRARY}
   DEBUG_POSTFIX "${OPENCV_DEBUG_POSTFIX}"
-  COMPILE_PDB_NAME ${PNG_LIBRARY}
-  COMPILE_PDB_NAME_DEBUG "${PNG_LIBRARY}${OPENCV_DEBUG_POSTFIX}"
   ARCHIVE_OUTPUT_DIRECTORY ${3P_LIBRARY_OUTPUT_PATH}
   )
 

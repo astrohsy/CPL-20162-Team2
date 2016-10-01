@@ -48,9 +48,7 @@
  * \brief Use GStreamer to read/write video
  */
 #include "precomp.hpp"
-#ifndef _MSC_VER
 #include <unistd.h>
-#endif
 #include <string.h>
 #include <gst/gst.h>
 #include <gst/gstbuffer.h>
@@ -77,21 +75,10 @@
 
 #if GST_VERSION_MAJOR == 0
 #define COLOR_ELEM "ffmpegcolorspace"
-#define COLOR_ELEM_NAME "ffmpegcsp"
 #elif FULL_GST_VERSION < VERSION_NUM(1,5,0)
 #define COLOR_ELEM "videoconvert"
-#define COLOR_ELEM_NAME COLOR_ELEM
 #else
 #define COLOR_ELEM "autovideoconvert"
-#define COLOR_ELEM_NAME COLOR_ELEM
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#include <sys/stat.h>
 #endif
 
 void toFraction(double decimal, double &numerator, double &denominator);
@@ -155,11 +142,11 @@ protected:
                        gpointer    data);
     GstElement*   pipeline;
     GstElement*   uridecodebin;
-    GstElement*   v4l2src;
     GstElement*   color;
     GstElement*   sink;
 #if GST_VERSION_MAJOR > 0
     GstSample*    sample;
+    GstMapInfo*   info;
 #endif
     GstBuffer*    buffer;
     GstCaps*      caps;
@@ -178,11 +165,11 @@ void CvCapture_GStreamer::init()
 {
     pipeline = NULL;
     uridecodebin = NULL;
-    v4l2src = NULL;
     color = NULL;
     sink = NULL;
 #if GST_VERSION_MAJOR > 0
     sample = NULL;
+    info = new GstMapInfo;
 #endif
     buffer = NULL;
     caps = NULL;
@@ -331,16 +318,17 @@ IplImage * CvCapture_GStreamer::retrieveFrame(int)
 #if GST_VERSION_MAJOR == 0
     frame->imageData = (char *)GST_BUFFER_DATA(buffer);
 #else
-    // info.data ptr is valid until next grabFrame where the associated sample is unref'd
-    GstMapInfo info = GstMapInfo();
-    gboolean success = gst_buffer_map(buffer,&info, (GstMapFlags)GST_MAP_READ);
+    // the data ptr in GstMapInfo is only valid throughout the mapifo objects life.
+    // TODO: check if reusing the mapinfo object is ok.
+
+    gboolean success = gst_buffer_map(buffer,info, (GstMapFlags)GST_MAP_READ);
     if (!success){
         //something weird went wrong here. abort. abort.
         //fprintf(stderr,"GStreamer: unable to map buffer");
         return 0;
     }
-    frame->imageData = (char*)info.data;
-    gst_buffer_unmap(buffer,&info);
+    frame->imageData = (char*)info->data;
+    gst_buffer_unmap(buffer,info);
 #endif
 
     return frame;
@@ -383,7 +371,9 @@ void CvCapture_GStreamer::startPipeline()
     if (status == GST_STATE_CHANGE_ASYNC)
     {
         // wait for status update
-        status = gst_element_get_state(pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+        GstState st1;
+        GstState st2;
+        status = gst_element_get_state(pipeline, &st1, &st2, GST_CLOCK_TIME_NONE);
     }
     if (status == GST_STATE_CHANGE_FAILURE)
     {
@@ -600,20 +590,9 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
     // else, we might have a file or a manual pipeline.
     // if gstreamer cannot parse the manual pipeline, we assume we were given and
     // ordinary file path.
-    if (!gst_uri_is_valid(filename))
+    if(!gst_uri_is_valid(filename))
     {
-#ifdef _MSC_VER
-        uri = new char[2048];
-        DWORD pathSize = GetFullPathName(filename, 2048, uri, NULL);
-        struct stat buf;
-        if (pathSize == 0 || stat(uri, &buf) != 0)
-        {
-            delete uri;
-            uri = NULL;
-        }
-#else
         uri = realpath(filename, NULL);
-#endif
         stream = false;
         if(uri)
         {
@@ -625,8 +604,6 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
             else
             {
                 CV_WARN("GStreamer: Error opening file\n");
-                CV_WARN(filename);
-                CV_WARN(uri);
                 close();
                 return false;
             }
@@ -643,9 +620,7 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
             stream = true;
             manualpipeline = true;
         }
-    }
-    else
-    {
+    } else {
         stream = true;
         uri = g_strdup(filename);
     }
@@ -666,86 +641,68 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
             uridecodebin = gst_element_make_from_uri(GST_URI_SRC, uri, "src", NULL);
 #endif
             element_from_uri = true;
-        }
-        else
-        {
+        }else{
             uridecodebin = gst_element_factory_make("uridecodebin", NULL);
             g_object_set(G_OBJECT(uridecodebin), "uri", uri, NULL);
         }
         g_free(protocol);
 
-        if(!uridecodebin)
-        {
+        if(!uridecodebin) {
             //fprintf(stderr, "GStreamer: Error opening bin: %s\n", err->message);
             close();
             return false;
         }
     }
 
-    if (manualpipeline)
+    if(manualpipeline)
     {
-        GstIterator *it = gst_bin_iterate_elements(GST_BIN(uridecodebin));
-
-        GstElement *element = NULL;
-        gboolean done = false;
-        gchar* name = NULL;
-#if GST_VERSION_MAJOR > 0
-        GValue value = G_VALUE_INIT;
-#endif
-
-        while (!done)
-        {
-#if GST_VERSION_MAJOR > 0
-            switch (gst_iterator_next (it, &value))
-            {
-            case GST_ITERATOR_OK:
-                element = GST_ELEMENT (g_value_get_object (&value));
-#else
-            switch (gst_iterator_next (it, (gpointer *)&element))
-            {
-            case GST_ITERATOR_OK:
-#endif
-                name = gst_element_get_name(element);
-                if (name)
-                {
-                    if (strstr(name, "opencvsink") != NULL || strstr(name, "appsink") != NULL)
-                    {
-                        sink = GST_ELEMENT ( gst_object_ref (element) );
-                    }
-                    else if (strstr(name, COLOR_ELEM_NAME) != NULL)
-                    {
-                        color = GST_ELEMENT ( gst_object_ref (element) );
-                    }
-                    else if (strstr(name, "v4l") != NULL)
-                    {
-                        v4l2src = GST_ELEMENT ( gst_object_ref (element) );
-                    }
-                    g_free(name);
-
-                    done = sink && color && v4l2src;
-                }
-#if GST_VERSION_MAJOR > 0
-                g_value_unset (&value);
-#endif
-
-                break;
-            case GST_ITERATOR_RESYNC:
-                gst_iterator_resync (it);
-                break;
-            case GST_ITERATOR_ERROR:
-            case GST_ITERATOR_DONE:
-                done = TRUE;
-                break;
-            }
-        }
-        gst_iterator_free (it);
-
-        if (!sink)
-        {
+        GstIterator *it = NULL;
+#if GST_VERSION_MAJOR == 0
+        it = gst_bin_iterate_sinks(GST_BIN(uridecodebin));
+        if(gst_iterator_next(it, (gpointer *)&sink) != GST_ITERATOR_OK) {
             CV_ERROR(CV_StsError, "GStreamer: cannot find appsink in manual pipeline\n");
             return false;
         }
+#else
+        it = gst_bin_iterate_sinks (GST_BIN(uridecodebin));
 
+        gboolean done = FALSE;
+        GstElement *element = NULL;
+        gchar* name = NULL;
+        GValue value = G_VALUE_INIT;
+
+        while (!done) {
+          switch (gst_iterator_next (it, &value)) {
+            case GST_ITERATOR_OK:
+              element = GST_ELEMENT (g_value_get_object (&value));
+              name = gst_element_get_name(element);
+              if (name){
+                if(strstr(name, "opencvsink") != NULL || strstr(name, "appsink") != NULL) {
+                  sink = GST_ELEMENT ( gst_object_ref (element) );
+                  done = TRUE;
+                }
+                g_free(name);
+              }
+              g_value_unset (&value);
+
+              break;
+            case GST_ITERATOR_RESYNC:
+              gst_iterator_resync (it);
+              break;
+            case GST_ITERATOR_ERROR:
+            case GST_ITERATOR_DONE:
+              done = TRUE;
+              break;
+          }
+        }
+        gst_iterator_free (it);
+
+
+        if (!sink){
+            CV_ERROR(CV_StsError, "GStreamer: cannot find appsink in manual pipeline\n");
+            return false;
+        }
+#endif
         pipeline = uridecodebin;
     }
     else
@@ -758,23 +715,18 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
 
         gst_bin_add_many(GST_BIN(pipeline), uridecodebin, color, sink, NULL);
 
-        if(element_from_uri)
-        {
-            if(!gst_element_link(uridecodebin, color))
-            {
+        if(element_from_uri) {
+            if(!gst_element_link(uridecodebin, color)) {
                 CV_ERROR(CV_StsError, "GStreamer: cannot link color -> sink\n");
                 gst_object_unref(pipeline);
                 pipeline = NULL;
                 return false;
             }
-        }
-        else
-        {
+        }else{
             g_signal_connect(uridecodebin, "pad-added", G_CALLBACK(newPad), color);
         }
 
-        if(!gst_element_link(color, sink))
-        {
+        if(!gst_element_link(color, sink)) {
             CV_ERROR(CV_StsError, "GStreamer: cannot link color -> sink\n");
             gst_object_unref(pipeline);
             pipeline = NULL;
@@ -802,13 +754,16 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
     gst_app_sink_set_caps(GST_APP_SINK(sink), caps);
     gst_caps_unref(caps);
 
+    // For video files only: set pipeline to PAUSED state to get its duration
+    if (file)
     {
-        status = gst_element_set_state(GST_ELEMENT(pipeline),
-                                       file ? GST_STATE_PAUSED : GST_STATE_PLAYING);
+        status = gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PAUSED);
         if (status == GST_STATE_CHANGE_ASYNC)
         {
             // wait for status update
-            status = gst_element_get_state(pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+            GstState st1;
+            GstState st2;
+            status = gst_element_get_state(pipeline, &st1, &st2, GST_CLOCK_TIME_NONE);
         }
         if (status == GST_STATE_CHANGE_FAILURE)
         {
@@ -859,9 +814,14 @@ bool CvCapture_GStreamer::open( int type, const char* filename )
 
         fps = (double)num/(double)denom;
 
-         // GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline")
-
-        stopPipeline();
+         // GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline");
+    }
+    else
+    {
+        duration = -1;
+        width = -1;
+        height = -1;
+        fps = -1;
     }
 
     __END__;
@@ -892,7 +852,7 @@ double CvCapture_GStreamer::getProperty( int propId ) const
 
     if(!pipeline) {
         CV_WARN("GStreamer: no pipeline");
-        return 0;
+        return false;
     }
 
     switch(propId) {
@@ -901,7 +861,7 @@ double CvCapture_GStreamer::getProperty( int propId ) const
         status = gst_element_query_position(sink, FORMAT, &value);
         if(!status) {
             CV_WARN("GStreamer: unable to query position of stream");
-            return 0;
+            return false;
         }
         return value * 1e-6; // nano seconds to milli seconds
     case CV_CAP_PROP_POS_FRAMES:
@@ -909,7 +869,7 @@ double CvCapture_GStreamer::getProperty( int propId ) const
         status = gst_element_query_position(sink, FORMAT, &value);
         if(!status) {
             CV_WARN("GStreamer: unable to query position of stream");
-            return 0;
+            return false;
         }
         return value;
     case CV_CAP_PROP_POS_AVI_RATIO:
@@ -917,7 +877,7 @@ double CvCapture_GStreamer::getProperty( int propId ) const
         status = gst_element_query_position(sink, FORMAT, &value);
         if(!status) {
             CV_WARN("GStreamer: unable to query position of stream");
-            return 0;
+            return false;
         }
         return ((double) value) / GST_FORMAT_PERCENT_MAX;
     case CV_CAP_PROP_FRAME_WIDTH:
@@ -936,21 +896,6 @@ double CvCapture_GStreamer::getProperty( int propId ) const
     case CV_CAP_PROP_CONTRAST:
     case CV_CAP_PROP_SATURATION:
     case CV_CAP_PROP_HUE:
-        if (v4l2src)
-        {
-            const gchar * propName =
-                    propId == CV_CAP_PROP_BRIGHTNESS ? "brightness" :
-                    propId == CV_CAP_PROP_CONTRAST ? "contrast" :
-                    propId == CV_CAP_PROP_SATURATION ? "saturation" :
-                    propId == CV_CAP_PROP_HUE ? "hue" : NULL;
-
-            if (propName)
-            {
-                gint32 value32 = 0;
-                g_object_get(G_OBJECT(v4l2src), propName, &value32, NULL);
-                return value32;
-            }
-        }
     case CV_CAP_PROP_GAIN:
     case CV_CAP_PROP_CONVERT_RGB:
         break;
@@ -967,7 +912,7 @@ double CvCapture_GStreamer::getProperty( int propId ) const
 
 #undef FORMAT
 
-    return 0;
+    return false;
 }
 
 /*!
@@ -1046,21 +991,6 @@ bool CvCapture_GStreamer::setProperty( int propId, double value )
     case CV_CAP_PROP_CONTRAST:
     case CV_CAP_PROP_SATURATION:
     case CV_CAP_PROP_HUE:
-        if (v4l2src)
-        {
-            const gchar * propName =
-                    propId == CV_CAP_PROP_BRIGHTNESS ? "brightness" :
-                    propId == CV_CAP_PROP_CONTRAST ? "contrast" :
-                    propId == CV_CAP_PROP_SATURATION ? "saturation" :
-                    propId == CV_CAP_PROP_HUE ? "hue" : NULL;
-
-            if (propName)
-            {
-                gint32 value32 = cv::saturate_cast<gint32>(value);
-                g_object_set(G_OBJECT(v4l2src), propName, &value32, NULL);
-                return true;
-            }
-        }
     case CV_CAP_PROP_GAIN:
     case CV_CAP_PROP_CONVERT_RGB:
         break;

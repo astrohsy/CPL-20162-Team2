@@ -137,7 +137,7 @@ BOOL CCameraControlApp::InitInstance()
 		_controller->run();
 	}
 
-	std::cout << _model << std::endl;
+	//std::cout << _model << std::endl;
 
 	/*
 	//Release Camera

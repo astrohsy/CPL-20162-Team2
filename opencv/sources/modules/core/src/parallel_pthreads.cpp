@@ -42,7 +42,7 @@
 
 #include "precomp.hpp"
 
-#ifdef HAVE_PTHREADS_PF
+#if defined HAVE_PTHREADS && HAVE_PTHREADS
 
 #include <algorithm>
 #include <pthread.h>
@@ -80,31 +80,25 @@ struct work_load
         set(range, body, nstripes);
     }
 
-    void set(const cv::Range& range, const cv::ParallelLoopBody& body, unsigned int nstripes)
+    void set(const cv::Range& range, const cv::ParallelLoopBody& body, int nstripes)
     {
         m_body = &body;
         m_range = &range;
-
-        //ensure that nstripes not larger than range length
-        m_nstripes = std::min( unsigned(m_range->end - m_range->start) , nstripes);
-
-        m_block_size = ((m_range->end - m_range->start - 1)/m_nstripes) + 1;
-
-        //ensure that nstripes not larger than blocks count, so we would never go out of range
-        m_nstripes = std::min(m_nstripes, unsigned(((m_range->end - m_range->start - 1)/m_block_size) + 1) );
+        m_nstripes = nstripes;
+        m_blocks_count = ((m_range->end - m_range->start - 1)/m_nstripes) + 1;
     }
 
     const cv::ParallelLoopBody* m_body;
     const cv::Range*            m_range;
-    unsigned int                         m_nstripes;
-    int                m_block_size;
+    int                         m_nstripes;
+    unsigned int                m_blocks_count;
 
     void clear()
     {
         m_body = 0;
         m_range = 0;
         m_nstripes = 0;
-        m_block_size = 0;
+        m_blocks_count = 0;
     }
 };
 
@@ -155,8 +149,21 @@ public:
 
     static ThreadManager& instance()
     {
-        CV_SINGLETON_LAZY_INIT_REF(ThreadManager, new ThreadManager())
+        if(!m_instance.ptr)
+        {
+            pthread_mutex_lock(&m_manager_access_mutex);
+
+            if(!m_instance.ptr)
+            {
+                m_instance.ptr = new ThreadManager();
+            }
+
+            pthread_mutex_unlock(&m_manager_access_mutex);
+        }
+
+        return *m_instance.ptr;
     }
+
 
     static void stop()
     {
@@ -181,6 +188,21 @@ public:
 
 private:
 
+    struct ptr_holder
+    {
+        ThreadManager* ptr;
+
+        ptr_holder(): ptr(NULL) { }
+
+        ~ptr_holder()
+        {
+            if(ptr)
+            {
+                delete ptr;
+            }
+        }
+    };
+
     ThreadManager();
 
     ~ThreadManager();
@@ -203,7 +225,8 @@ private:
     unsigned int m_task_position;
     unsigned int m_num_of_completed_tasks;
 
-    pthread_mutex_t m_manager_access_mutex;
+    static pthread_mutex_t m_manager_access_mutex;
+    static ptr_holder m_instance;
 
     static const char m_env_name[];
     static const unsigned int m_default_number_of_threads;
@@ -221,6 +244,13 @@ private:
     ThreadManagerPoolState m_pool_state;
 };
 
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+#endif
+
+pthread_mutex_t ThreadManager::m_manager_access_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+ThreadManager::ptr_holder ThreadManager::m_instance;
 const char ThreadManager::m_env_name[] = "OPENCV_FOR_THREADS_NUM";
 
 #ifdef ANDROID
@@ -268,18 +298,14 @@ void ForThread::stop()
 {
     if(m_state == eFTStarted)
     {
-        pthread_mutex_lock(&m_thread_mutex);
         m_state = eFTToStop;
-        pthread_mutex_unlock(&m_thread_mutex);
 
         run();
 
         pthread_join(m_posix_thread, NULL);
     }
 
-    pthread_mutex_lock(&m_thread_mutex);
     m_state = eFTStoped;
-    pthread_mutex_unlock(&m_thread_mutex);
 }
 
 void ForThread::run()
@@ -305,10 +331,10 @@ void ForThread::execute()
 
     work_load& load = m_parent->m_work_load;
 
-    while(m_current_pos < load.m_nstripes)
+    while(m_current_pos < load.m_blocks_count)
     {
-        int start = load.m_range->start + m_current_pos*load.m_block_size;
-        int end = std::min(start + load.m_block_size, load.m_range->end);
+        int start = load.m_range->start + m_current_pos*load.m_nstripes;
+        int end = std::min(start + load.m_nstripes, load.m_range->end);
 
         load.m_body->operator()(cv::Range(start, end));
 
@@ -346,12 +372,6 @@ void ForThread::thread_body()
 ThreadManager::ThreadManager(): m_num_threads(0), m_task_complete(false), m_num_of_completed_tasks(0), m_pool_state(eTMNotInited)
 {
     int res = 0;
-
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    res |= pthread_mutex_init(&m_manager_access_mutex, &attr);
-    pthread_mutexattr_destroy(&attr);
 
     res |= pthread_mutex_init(&m_manager_task_mutex, NULL);
 
@@ -397,11 +417,9 @@ void ThreadManager::run(const cv::Range& range, const cv::ParallelLoopBody& body
         {
             if(initPool())
             {
-                if(nstripes < 1) nstripes = 4*m_threads.size();
+                double min_stripes = double(range.end - range.start)/(4*m_threads.size());
 
-                double max_stripes = 4*m_threads.size();
-
-                nstripes = std::min(nstripes, max_stripes);
+                nstripes = std::max(nstripes, min_stripes);
 
                 pthread_mutex_lock(&m_manager_task_mutex);
 
@@ -411,7 +429,7 @@ void ThreadManager::run(const cv::Range& range, const cv::ParallelLoopBody& body
 
                 m_task_complete = false;
 
-                m_work_load.set(range, body, cvCeil(nstripes));
+                m_work_load.set(range, body, std::ceil(nstripes));
 
                 for(size_t i = 0; i < m_threads.size(); ++i)
                 {

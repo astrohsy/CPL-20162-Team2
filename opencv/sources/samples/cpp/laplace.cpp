@@ -15,7 +15,7 @@ static void help()
             "\nThis program demonstrates Laplace point/edge detection using OpenCV function Laplacian()\n"
             "It captures from the camera of your choice: 0, 1, ... default 0\n"
             "Call:\n"
-            "./laplace -c=<camera #, default 0> -p=<index of the frame to be decoded/captured next>\n" << endl;
+            "./laplace [camera #, default 0]\n" << endl;
 }
 
 enum {GAUSSIAN, BLUR, MEDIAN};
@@ -26,31 +26,25 @@ int smoothType = GAUSSIAN;
 int main( int argc, char** argv )
 {
     VideoCapture cap;
-    cv::CommandLineParser parser(argc, argv, "{help h | | }{ c | 0 | }{ p | | }");
-    if ( parser.has("help") )
+    help();
+
+    if( argc == 1 || (argc == 2 && strlen(argv[1]) == 1 && isdigit(argv[1][0])))
+        cap.open(argc == 2 ? argv[1][0] - '0' : 0);
+    else if( argc >= 2 )
     {
-        help();
-        return 0;
-    }
-    if( parser.get<string>("c").size() == 1 && isdigit(parser.get<string>("c")[0]) )
-        cap.open(parser.get<int>("c"));
-    else
-        cap.open(parser.get<string>("c"));
-    if( cap.isOpened() )
-        cout << "Video " << parser.get<string>("c") <<
-            ": width=" << cap.get(CAP_PROP_FRAME_WIDTH) <<
-            ", height=" << cap.get(CAP_PROP_FRAME_HEIGHT) <<
-            ", nframes=" << cap.get(CAP_PROP_FRAME_COUNT) << endl;
-    if( parser.has("p") )
-    {
-        int pos = parser.get<int>("p");
-        if (!parser.check())
+        cap.open(argv[1]);
+        if( cap.isOpened() )
+            cout << "Video " << argv[1] <<
+                ": width=" << cap.get(CAP_PROP_FRAME_WIDTH) <<
+                ", height=" << cap.get(CAP_PROP_FRAME_HEIGHT) <<
+                ", nframes=" << cap.get(CAP_PROP_FRAME_COUNT) << endl;
+        if( argc > 2 && isdigit(argv[2][0]) )
         {
-            parser.printErrors();
-            return -1;
+            int pos;
+            sscanf(argv[2], "%d", &pos);
+            cout << "seeking to frame #" << pos << endl;
+            cap.set(CAP_PROP_POS_FRAMES, pos);
         }
-        cout << "seeking to frame #" << pos << endl;
-        cap.set(CAP_PROP_POS_FRAMES, pos);
     }
 
     if( !cap.isOpened() )

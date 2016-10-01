@@ -67,11 +67,10 @@ class CvCapture_Images : public CvCapture
 public:
     CvCapture_Images()
     {
-        filename = NULL;
+        filename = 0;
         currentframe = firstframe = 0;
         length = 0;
-        frame = NULL;
-        grabbedInOpen = false;
+        frame = 0;
     }
 
     virtual ~CvCapture_Images()
@@ -93,7 +92,6 @@ protected:
     unsigned length; // length of sequence
 
     IplImage* frame;
-    bool grabbedInOpen;
 };
 
 
@@ -102,7 +100,7 @@ void CvCapture_Images::close()
     if( filename )
     {
         free(filename);
-        filename = NULL;
+        filename = 0;
     }
     currentframe = firstframe = 0;
     length = 0;
@@ -115,25 +113,17 @@ bool CvCapture_Images::grabFrame()
     char str[_MAX_PATH];
     sprintf(str, filename, firstframe + currentframe);
 
-    if (grabbedInOpen)
-    {
-        grabbedInOpen = false;
-        ++currentframe;
-
-        return frame != NULL;
-    }
-
     cvReleaseImage(&frame);
     frame = cvLoadImage(str, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
     if( frame )
         currentframe++;
 
-    return frame != NULL;
+    return frame != 0;
 }
 
 IplImage* CvCapture_Images::retrieveFrame(int)
 {
-    return grabbedInOpen ? NULL : frame;
+    return frame;
 }
 
 double CvCapture_Images::getProperty(int id) const
@@ -178,8 +168,6 @@ bool CvCapture_Images::setProperty(int id, double value)
             value = length - 1;
         }
         currentframe = cvRound(value);
-        if (currentframe != 0)
-            grabbedInOpen = false; // grabbed frame is not valid anymore
         return true;
     case CV_CAP_PROP_POS_AVI_RATIO:
         if(value > 1) {
@@ -190,8 +178,6 @@ bool CvCapture_Images::setProperty(int id, double value)
             value = 0;
         }
         currentframe = cvRound((length - 1) * value);
-        if (currentframe != 0)
-            grabbedInOpen = false; // grabbed frame is not valid anymore
         return true;
     }
     CV_WARN("unknown/unhandled property\n");
@@ -294,13 +280,7 @@ bool CvCapture_Images::open(const char * _filename)
     }
 
     firstframe = offset;
-
-    // grab frame to enable properties retrieval
-    bool grabRes = grabFrame();
-    grabbedInOpen = true;
-    currentframe = 0;
-
-    return grabRes;
+    return true;
 }
 
 
@@ -312,7 +292,7 @@ CvCapture* cvCreateFileCapture_Images(const char * filename)
         return capture;
 
     delete capture;
-    return NULL;
+    return 0;
 }
 
 //

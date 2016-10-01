@@ -1,7 +1,6 @@
 #include "opencv2/imgproc/imgproc_c.h"
 #include "opencv2/videoio/videoio_c.h"
 #include "opencv2/highgui/highgui_c.h"
-#include "opencv2/core/utility.hpp"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -21,22 +20,15 @@ int main( int argc, char** argv )
     IplImage*  recovered_img = 0;
 
     help();
-    cv::CommandLineParser parser(argc, argv, "{help h||}{@input|0|}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
-    std::string arg = parser.get<std::string>("@input");
-    if( arg.size() == 1 && isdigit(arg[0]) )
-        capture = cvCaptureFromCAM( arg[0] - '0' );
-    else
-        capture = cvCaptureFromAVI( arg.c_str() );
+
+    if( argc == 1 || (argc == 2 && strlen(argv[1]) == 1 && isdigit(argv[1][0])))
+        capture = cvCaptureFromCAM( argc == 2 ? argv[1][0] - '0' : 0 );
+    else if( argc == 2 )
+        capture = cvCaptureFromAVI( argv[1] );
     if( !capture )
     {
-        const char* name = argv[0];
         fprintf(stderr,"Could not initialize capturing...\n");
-        fprintf(stderr,"Usage: %s <CAMERA_NUMBER>    , or \n       %s <VIDEO_FILE>\n", name, name);
+        fprintf(stderr,"Usage: %s <CAMERA_NUMBER>    , or \n       %s <VIDEO_FILE>\n",argv[0],argv[0]);
         help();
         return -1;
     }

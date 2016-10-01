@@ -119,12 +119,6 @@ namespace cv
         class CV_EXPORTS Mesh
         {
         public:
-            enum {
-                LOAD_AUTO = 0,
-                LOAD_PLY = 1,
-                LOAD_OBJ = 2
-            };
-
             Mat cloud, colors, normals;
 
             //! Raw integer list of the form: (n,id1,id2,...,idn, n,id1,id2,...,idn, ...)
@@ -133,17 +127,11 @@ namespace cv
 
             Mat texture, tcoords;
 
-            /** @brief Loads a mesh from a ply or a obj file.
+            /** @brief Loads a mesh from a ply file.
 
-            @param file File name
-            @param type File type (for now only PLY and OBJ are supported)
-
-            **File type** can be one of the following:
-            -   **LOAD_PLY**
-            -   **LOAD_OBJ**
+            @param file File name (for now only PLY is supported)
              */
-            static Mesh load(const String& file, int type = LOAD_PLY);
-
+            static Mesh load(const String& file);
         };
 
         /** @brief This class wraps intrinsic parameters of a camera.

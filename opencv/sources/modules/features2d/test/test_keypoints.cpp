@@ -40,6 +40,7 @@
 //M*/
 
 #include "test_precomp.hpp"
+#include "opencv2/highgui.hpp"
 #include "opencv2/core/core_c.h"
 
 using namespace std;

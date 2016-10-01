@@ -19,7 +19,7 @@ static void help()
             "This program demonstrates a method for shape comparisson based on Shape Context\n"
             "You should run the program providing a number between 1 and 20 for selecting an image in the folder ../data/shape_sample.\n"
             "Call\n"
-            "./shape_example [number between 1 and 20, 1 default]\n\n");
+            "./shape_example [number between 1 and 20]\n\n");
 }
 
 static vector<Point> simpleContour( const Mat& currentQuery, int n=300 )
@@ -54,24 +54,16 @@ static vector<Point> simpleContour( const Mat& currentQuery, int n=300 )
 
 int main(int argc, char** argv)
 {
+    help();
     string path = "../data/shape_sample/";
-    cv::CommandLineParser parser(argc, argv, "{help h||}{@input|1|}");
-    if (parser.has("help"))
+    int indexQuery = 1;
+    if( argc < 2 )
     {
-        help();
-        return 0;
+        std::cout<<"Using first image as query."<<std::endl;
     }
-    int indexQuery = parser.get<int>("@input");
-    if (!parser.check())
+    else
     {
-        parser.printErrors();
-        help();
-        return 1;
-    }
-    if (indexQuery < 1 || indexQuery > 20)
-    {
-        help();
-        return 1;
+        sscanf( argv[1], "%i", &indexQuery );
     }
     cv::Ptr <cv::ShapeContextDistanceExtractor> mysc = cv::createShapeContextDistanceExtractor();
 

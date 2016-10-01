@@ -107,17 +107,15 @@ static void help()
 
 const char* keys =
 {
-    "{help h||}{@image |../data/stuff.jpg|input image file}"
+    "{@image |../data/stuff.jpg|input image file}"
 };
 
 int main( int argc, const char** argv )
 {
-    CommandLineParser parser(argc, argv, keys);
     help();
-    if (parser.has("help"))
-        return 0;
+    CommandLineParser parser(argc, argv, keys);
     string filename = parser.get<string>(0);
-    gray = imread(filename, 0);
+    gray = imread(filename.c_str(), 0);
     if(gray.empty())
     {
         printf("Cannot read image file: %s\n", filename.c_str());

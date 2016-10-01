@@ -8,5 +8,5 @@ using namespace cv;
 
 int main()
 {
-
+	namedWindow("Display window", 1);
 }

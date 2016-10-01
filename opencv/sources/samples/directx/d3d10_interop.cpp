@@ -135,7 +135,7 @@ public:
         if (!m_cap.read(m_frame_bgr))
             return -1;
 
-        cv::cvtColor(m_frame_bgr, m_frame_rgba, CV_BGR2RGBA);
+        cv::cvtColor(m_frame_bgr, m_frame_rgba, CV_RGB2BGRA);
 
         UINT subResource = ::D3D10CalcSubresource(0, 0, 1);
 
@@ -166,9 +166,6 @@ public:
             if (m_shutdown)
                 return 0;
 
-            // capture user input once
-            MODE mode = (m_mode == MODE_GPU_NV12) ? MODE_GPU_RGBA : m_mode;
-
             HRESULT r;
             ID3D10Texture2D* pSurface;
 
@@ -178,17 +175,19 @@ public:
                 return -1;
             }
 
-            m_timer.start();
-
-            switch (mode)
+            switch (m_mode)
             {
+                case MODE_NOP:
+                    // no processing
+                    break;
+
                 case MODE_CPU:
                 {
                     // process video frame on CPU
                     UINT subResource = ::D3D10CalcSubresource(0, 0, 1);
 
                     D3D10_MAPPED_TEXTURE2D mappedTex;
-                    r = pSurface->Map(subResource, D3D10_MAP_WRITE_DISCARD, 0, &mappedTex);
+                    r = m_pSurface->Map(subResource, D3D10_MAP_WRITE_DISCARD, 0, &mappedTex);
                     if (FAILED(r))
                     {
                         return r;
@@ -196,49 +195,29 @@ public:
 
                     cv::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, (int)mappedTex.RowPitch);
 
-                    if (m_demo_processing)
+                    if (!m_disableProcessing)
                     {
                         // blur D3D10 surface with OpenCV on CPU
                         cv::blur(m, m, cv::Size(15, 15), cv::Point(-7, -7));
                     }
 
-                    cv::String strMode = cv::format("mode: %s", m_modeStr[MODE_CPU].c_str());
-                    cv::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
-                    cv::String strTime = cv::format("time: %4.1f msec", m_timer.time(Timer::UNITS::MSEC));
-                    cv::String strDevName = cv::format("OpenCL device: %s", m_oclDevName.c_str());
-
-                    cv::putText(m, strMode, cv::Point(0, 16), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(m, strProcessing, cv::Point(0, 32), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(m, strTime, cv::Point(0, 48), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(m, strDevName, cv::Point(0, 64), 1, 0.8, cv::Scalar(0, 0, 0));
-
-                    pSurface->Unmap(subResource);
+                    m_pSurface->Unmap(subResource);
 
                     break;
                 }
 
-                case MODE_GPU_RGBA:
+                case MODE_GPU:
                 {
                     // process video frame on GPU
                     cv::UMat u;
 
                     cv::directx::convertFromD3D10Texture2D(pSurface, u);
 
-                    if (m_demo_processing)
+                    if (!m_disableProcessing)
                     {
-                        // blur D3D10 surface with OpenCV on GPU with OpenCL
+                        // blur D3D9 surface with OpenCV on GPU with OpenCL
                         cv::blur(u, u, cv::Size(15, 15), cv::Point(-7, -7));
                     }
-
-                    cv::String strMode = cv::format("mode: %s", m_modeStr[MODE_GPU_RGBA].c_str());
-                    cv::String strProcessing = m_demo_processing ? "blur frame" : "copy frame";
-                    cv::String strTime = cv::format("time: %4.1f msec", m_timer.time(Timer::UNITS::MSEC));
-                    cv::String strDevName = cv::format("OpenCL device: %s", m_oclDevName.c_str());
-
-                    cv::putText(u, strMode, cv::Point(0, 16), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(u, strProcessing, cv::Point(0, 32), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(u, strTime, cv::Point(0, 48), 1, 0.8, cv::Scalar(0, 0, 0));
-                    cv::putText(u, strDevName, cv::Point(0, 64), 1, 0.8, cv::Scalar(0, 0, 0));
 
                     cv::directx::convertToD3D10Texture2D(u, pSurface);
 
@@ -247,7 +226,7 @@ public:
 
             } // switch
 
-            m_timer.stop();
+            print_info(pSurface, m_mode, getFps(), m_oclDevName);
 
             // traditional DX render pipeline:
             //   BitBlt surface to backBuffer and flip backBuffer to frontBuffer
@@ -270,6 +249,35 @@ public:
 
         return 0;
     } // render()
+
+
+    void print_info(ID3D10Texture2D* pSurface, int mode, float fps, cv::String oclDevName)
+    {
+        HRESULT r;
+
+        UINT subResource = ::D3D10CalcSubresource(0, 0, 1);
+
+        D3D10_MAPPED_TEXTURE2D mappedTex;
+        r = pSurface->Map(subResource, D3D10_MAP_WRITE_DISCARD, 0, &mappedTex);
+        if (FAILED(r))
+        {
+            return;
+        }
+
+        cv::Mat m(m_height, m_width, CV_8UC4, mappedTex.pData, (int)mappedTex.RowPitch);
+
+        cv::String strMode    = cv::format("%s", m_modeStr[mode].c_str());
+        cv::String strFPS     = cv::format("%2.1f", fps);
+        cv::String strDevName = cv::format("%s", oclDevName.c_str());
+
+        cv::putText(m, strMode, cv::Point(0, 16), 1, 0.8, cv::Scalar(0, 0, 0));
+        cv::putText(m, strFPS, cv::Point(0, 32), 1, 0.8, cv::Scalar(0, 0, 0));
+        cv::putText(m, strDevName, cv::Point(0, 48), 1, 0.8, cv::Scalar(0, 0, 0));
+
+        m_pSurface->Unmap(subResource);
+
+        return;
+    } // print_info()
 
 
     int cleanup(void)

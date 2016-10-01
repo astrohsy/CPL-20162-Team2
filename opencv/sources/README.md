@@ -5,13 +5,13 @@
 #### Resources
 
 * Homepage: <http://opencv.org>
-* Docs: <http://docs.opencv.org/master/>
+* Docs: <http://docs.opencv.org>
 * Q&A forum: <http://answers.opencv.org>
-* Issue tracking: <https://github.com/Itseez/opencv/issues>
+* Issue tracking: <http://code.opencv.org>
 
 #### Contributing
 
-Please read before starting work on a pull request: <https://github.com/Itseez/opencv/wiki/How_to_contribute>
+Please read before starting work on a pull request: <http://code.opencv.org/projects/opencv/wiki/How_to_contribute>
 
 Summary of guidelines:
 

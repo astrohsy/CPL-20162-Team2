@@ -72,7 +72,6 @@ public class Tutorial2Activity extends Activity implements CvCameraViewListener2
         setContentView(R.layout.tutorial2_surface_view);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.tutorial2_activity_surface_view);
-        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
     }
 

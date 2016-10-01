@@ -66,8 +66,7 @@ namespace cv
             FONT_SIZE,
             REPRESENTATION,
             IMMEDIATE_RENDERING,
-            SHADING,
-            AMBIENT
+            SHADING
         };
 
         enum RepresentationValues
@@ -137,7 +136,6 @@ namespace cv
             -   **OPACITY**
             -   **LINE_WIDTH**
             -   **FONT_SIZE**
-            -   **AMBIENT**
             -
             **REPRESENTATION**: Expected values are
             :   -   **REPRESENTATION_POINTS**
@@ -496,12 +494,6 @@ namespace cv
             @param image BGR or Gray-Scale image.
              */
             void setImage(InputArray image);
-
-            /** @brief Sets the image size of the widget.
-
-            @param size the new size of the image.
-             */
-            void setSize(const Size& size);
         };
 
         /////////////////////////////////////////////////////////////////////////////

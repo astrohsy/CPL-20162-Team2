@@ -583,7 +583,6 @@ FarnebackUpdateFlow_GaussianBlur( const Mat& _R0, const Mat& _R1,
 
 }
 
-#ifdef HAVE_OPENCL
 namespace cv
 {
 class FarnebackOpticalFlow
@@ -846,7 +845,7 @@ private:
 #else
         size_t localsize[2] = { 256, 1};
 #endif
-        size_t globalsize[2] = { (size_t)src.cols, (size_t)src.rows};
+        size_t globalsize[2] = { src.cols, src.rows};
         int smem_size = (int)((localsize[0] + 2*ksizeHalf) * sizeof(float));
         ocl::Kernel kernel;
         if (!kernel.create("gaussianBlur", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
@@ -873,7 +872,7 @@ private:
 #else
         size_t localsize[2] = { 256, 1};
 #endif
-        size_t globalsize[2] = { (size_t)src.cols, (size_t)height};
+        size_t globalsize[2] = { src.cols, height};
         int smem_size = (int)((localsize[0] + 2*ksizeHalf) * 5 * sizeof(float));
         ocl::Kernel kernel;
         if (!kernel.create("gaussianBlur5", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
@@ -898,7 +897,7 @@ private:
 #else
         size_t localsize[2] = { 256, 1};
 #endif
-        size_t globalsize[2] = { DIVUP((size_t)src.cols, localsize[0] - 2*polyN) * localsize[0], (size_t)src.rows};
+        size_t globalsize[2] = { DIVUP(src.cols, localsize[0] - 2*polyN) * localsize[0], src.rows};
 
 #if 0
         const cv::ocl::Device &device = cv::ocl::Device::getDefault();
@@ -935,7 +934,7 @@ private:
 #else
         size_t localsize[2] = { 256, 1};
 #endif
-        size_t globalsize[2] = { (size_t)src.cols, (size_t)height};
+        size_t globalsize[2] = { src.cols, height};
 
         ocl::Kernel kernel;
         if (!kernel.create("boxFilter5", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
@@ -962,7 +961,7 @@ private:
 #else
         size_t localsize[2] = { 32, 8};
 #endif
-        size_t globalsize[2] = { (size_t)flowx.cols, (size_t)flowx.rows};
+        size_t globalsize[2] = { flowx.cols, flowx.rows};
 
         ocl::Kernel kernel;
         if (!kernel.create("updateFlow", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
@@ -986,7 +985,7 @@ private:
 #else
         size_t localsize[2] = { 32, 8};
 #endif
-        size_t globalsize[2] = { (size_t)flowx.cols, (size_t)flowx.rows};
+        size_t globalsize[2] = { flowx.cols, flowx.rows};
 
         ocl::Kernel kernel;
         if (!kernel.create("updateMatrices", cv::ocl::video::optical_flow_farneback_oclsrc, ""))
@@ -1075,20 +1074,17 @@ static bool ocl_calcOpticalFlowFarneback( InputArray _prev0, InputArray _next0,
     return true;
 }
 }
-#endif // HAVE_OPENCL
 
 void cv::calcOpticalFlowFarneback( InputArray _prev0, InputArray _next0,
                                InputOutputArray _flow0, double pyr_scale, int levels, int winsize,
                                int iterations, int poly_n, double poly_sigma, int flags )
 {
-#ifdef HAVE_OPENCL
     bool use_opencl = ocl::useOpenCL() && _flow0.isUMat();
     if( use_opencl && ocl_calcOpticalFlowFarneback(_prev0, _next0, _flow0, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags))
     {
         CV_IMPL_ADD(CV_IMPL_OCL);
         return;
     }
-#endif
 
     Mat prev0 = _prev0.getMat(), next0 = _next0.getMat();
     const int min_size = 32;

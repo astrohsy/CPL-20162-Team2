@@ -63,17 +63,12 @@ int main(int argc, char** argv)
     VideoCapture cap;
     bool update_bg_model = true;
 
-    CommandLineParser parser(argc, argv, "{help h||}{@input||}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
-    string input = parser.get<std::string>("@input");
-    if (input.empty())
+    help();
+
+    if( argc < 2 )
         cap.open(0);
     else
-        cap.open(input);
+        cap.open(std::string(argv[1]));
 
     if( !cap.isOpened() )
     {

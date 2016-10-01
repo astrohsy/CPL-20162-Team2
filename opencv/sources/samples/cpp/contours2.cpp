@@ -33,15 +33,14 @@ static void on_trackbar(int, void*)
     imshow("contours", cnt_img);
 }
 
-int main( int argc, char** argv)
+int main( int argc, char**)
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help"))
+    Mat img = Mat::zeros(w, w, CV_8UC1);
+    if(argc > 1)
     {
         help();
-        return 0;
+        return -1;
     }
-    Mat img = Mat::zeros(w, w, CV_8UC1);
     //Draw 6 faces
     for( int i = 0; i < 6; i++ )
     {

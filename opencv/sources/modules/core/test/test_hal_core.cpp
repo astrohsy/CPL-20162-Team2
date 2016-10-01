@@ -40,6 +40,7 @@
 //M*/
 
 #include "test_precomp.hpp"
+#include "opencv2/hal.hpp"
 
 using namespace cv;
 
@@ -71,21 +72,21 @@ TEST(Core_HAL, mathfuncs)
             {
             case HAL_EXP:
                 if( depth == CV_32F )
-                    hal::exp32f(src.ptr<float>(), dst.ptr<float>(), n);
+                    hal::exp(src.ptr<float>(), dst.ptr<float>(), n);
                 else
-                    hal::exp64f(src.ptr<double>(), dst.ptr<double>(), n);
+                    hal::exp(src.ptr<double>(), dst.ptr<double>(), n);
                 break;
             case HAL_LOG:
                 if( depth == CV_32F )
-                    hal::log32f(src.ptr<float>(), dst.ptr<float>(), n);
+                    hal::log(src.ptr<float>(), dst.ptr<float>(), n);
                 else
-                    hal::log64f(src.ptr<double>(), dst.ptr<double>(), n);
+                    hal::log(src.ptr<double>(), dst.ptr<double>(), n);
                 break;
             case HAL_SQRT:
                 if( depth == CV_32F )
-                    hal::sqrt32f(src.ptr<float>(), dst.ptr<float>(), n);
+                    hal::sqrt(src.ptr<float>(), dst.ptr<float>(), n);
                 else
-                    hal::sqrt64f(src.ptr<double>(), dst.ptr<double>(), n);
+                    hal::sqrt(src.ptr<double>(), dst.ptr<double>(), n);
                 break;
             default:
                 CV_Error(Error::StsBadArg, "unknown function");
@@ -158,15 +159,15 @@ TEST(Core_HAL, mat_decomp)
             {
             case HAL_LU:
                 if( depth == CV_32F )
-                    hal::LU32f(a.ptr<float>(), a.step, size, x.ptr<float>(), x.step, 1);
+                    hal::LU(a.ptr<float>(), a.step, size, x.ptr<float>(), x.step, 1);
                 else
-                    hal::LU64f(a.ptr<double>(), a.step, size, x.ptr<double>(), x.step, 1);
+                    hal::LU(a.ptr<double>(), a.step, size, x.ptr<double>(), x.step, 1);
                 break;
             case HAL_CHOL:
                 if( depth == CV_32F )
-                    hal::Cholesky32f(a.ptr<float>(), a.step, size, x.ptr<float>(), x.step, 1);
+                    hal::Cholesky(a.ptr<float>(), a.step, size, x.ptr<float>(), x.step, 1);
                 else
-                    hal::Cholesky64f(a.ptr<double>(), a.step, size, x.ptr<double>(), x.step, 1);
+                    hal::Cholesky(a.ptr<double>(), a.step, size, x.ptr<double>(), x.step, 1);
                 break;
             default:
                 CV_Error(Error::StsBadArg, "unknown function");

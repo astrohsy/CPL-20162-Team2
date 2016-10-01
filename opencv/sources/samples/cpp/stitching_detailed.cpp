@@ -119,10 +119,8 @@ static void printUsage()
         "      Blending strength from [0,100] range. The default is 5.\n"
         "  --output <result_img>\n"
         "      The default is 'result.jpg'.\n"
-        "  --timelapse (as_is|crop) \n"
-        "      Output warped images separately as frames of a time lapse movie, with 'fixed_' prepended to input file names.\n"
-        "  --rangewidth <int>\n"
-        "      uses range_width to limit number of images to match with.\n";
+        "  --timelapse (as_is|crop) (range_width)\n"
+        "      Output warped images separately as frames of a time lapse movie, with 'fixed_' prepended to input file names.\n";
 }
 
 
@@ -150,7 +148,7 @@ int timelapse_type = Timelapser::AS_IS;
 float blend_strength = 5;
 string result_name = "result.jpg";
 bool timelapse = false;
-int range_width = -1;
+int timelapse_range = 5;
 
 
 static int parseCmdArgs(int argc, char** argv)
@@ -328,10 +326,8 @@ static int parseCmdArgs(int argc, char** argv)
                 return -1;
             }
             i++;
-        }
-        else if (string(argv[i]) == "--rangewidth")
-        {
-            range_width = atoi(argv[i + 1]);
+
+            timelapse_range = atoi(argv[i + 1]);
             i++;
         }
         else if (string(argv[i]) == "--blend_strength")
@@ -462,7 +458,7 @@ int main(int argc, char* argv[])
     t = getTickCount();
 #endif
     vector<MatchesInfo> pairwise_matches;
-    if (range_width==-1)
+    if (!timelapse)
     {
         BestOf2NearestMatcher matcher(try_cuda, match_conf);
         matcher(features, pairwise_matches);
@@ -470,7 +466,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        BestOf2NearestRangeMatcher matcher(range_width, try_cuda, match_conf);
+        BestOf2NearestRangeMatcher matcher(timelapse_range, try_cuda, match_conf);
         matcher(features, pairwise_matches);
         matcher.collectGarbage();
     }
@@ -817,8 +813,9 @@ int main(int argc, char* argv[])
             }
             blender->prepare(corners, sizes);
         }
-        else if (!timelapser && timelapse)
+        else if (!timelapser)
         {
+            CV_Assert(timelapse);
             timelapser = Timelapser::createDefault(timelapse_type);
             timelapser->initialize(corners, sizes);
         }
@@ -827,17 +824,8 @@ int main(int argc, char* argv[])
         if (timelapse)
         {
             timelapser->process(img_warped_s, Mat::ones(img_warped_s.size(), CV_8UC1), corners[img_idx]);
-            String fixedFileName;
-            size_t pos_s = String(img_names[img_idx]).find_last_of("/\\");
-            if (pos_s == String::npos)
-            {
-                fixedFileName = "fixed_" + img_names[img_idx];
-            }
-            else
-            {
-                fixedFileName = "fixed_" + String(img_names[img_idx]).substr(pos_s + 1, String(img_names[img_idx]).length() - pos_s);
-            }
-            imwrite(fixedFileName, timelapser->getDst());
+
+            imwrite("fixed_" + img_names[img_idx], timelapser->getDst());
         }
         else
         {

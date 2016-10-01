@@ -108,7 +108,6 @@ namespace
                 flow(i, j) = u;
             }
         }
-        file.close();
     }
 
     bool isFlowCorrect(Point2f u)

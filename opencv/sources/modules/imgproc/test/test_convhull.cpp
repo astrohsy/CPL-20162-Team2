@@ -1426,7 +1426,7 @@ protected:
     void run_func(void);
     int validate_test_results( int test_case_idx );
     double max_noise;
-    AutoBuffer<float> line, line0;
+    float line[6], line0[6];
     int dist_type;
     double reps, aeps;
 };
@@ -1438,6 +1438,11 @@ CV_FitLineTest::CV_FitLineTest()
     max_log_size = 10;
     max_noise = 0.05;
 }
+
+#if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
 
 void CV_FitLineTest::generate_point_set( void* pointsSet )
 {
@@ -1510,12 +1515,14 @@ void CV_FitLineTest::generate_point_set( void* pointsSet )
     }
 }
 
+#if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
+# pragma GCC diagnostic pop
+#endif
+
 int CV_FitLineTest::prepare_test_case( int test_case_idx )
 {
     RNG& rng = ts->get_rng();
     dims = cvtest::randInt(rng) % 2 + 2;
-    line.allocate(dims * 2);
-    line0.allocate(dims * 2);
     min_log_size = MAX(min_log_size,5);
     max_log_size = MAX(min_log_size,max_log_size);
     int code = CV_BaseShapeDescrTest::prepare_test_case( test_case_idx );
@@ -1535,6 +1542,11 @@ void CV_FitLineTest::run_func()
     else
         cv::fitLine(cv::cvarrToMat(points), (cv::Vec6f&)line[0], dist_type, 0, reps, aeps);
 }
+
+#if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
 
 int CV_FitLineTest::validate_test_results( int test_case_idx )
 {
@@ -1613,6 +1625,10 @@ _exit_:
     }
     return code;
 }
+
+#if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ == 8)
+# pragma GCC diagnostic pop
+#endif
 
 /****************************************************************************************\
 *                                   ContourMoments Test                                  *

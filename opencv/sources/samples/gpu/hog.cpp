@@ -22,13 +22,9 @@ public:
     static Args read(int argc, char** argv);
 
     string src;
-    bool src_is_folder;
     bool src_is_video;
     bool src_is_camera;
     int camera_id;
-
-    bool svm_load;
-    string svm;
 
     bool write_video;
     string dst_video;
@@ -48,10 +44,6 @@ public:
 
     int win_width;
     int win_stride_width, win_stride_height;
-    int block_width;
-    int block_stride_width, block_stride_height;
-    int cell_width;
-    int nbins;
 
     bool gamma_corr;
 };
@@ -101,9 +93,6 @@ static void printHelp()
     cout << "Histogram of Oriented Gradients descriptor and detector sample.\n"
          << "\nUsage: hog_gpu\n"
          << "  (<image>|--video <vide>|--camera <camera_id>) # frames source\n"
-         << "  or"
-         << "  (--folder <folder_path>) # load images from folder\n"
-         << "  [--svm <file> # load svm file"
          << "  [--make_gray <true/false>] # convert image to gray one or not\n"
          << "  [--resize_src <true/false>] # do resize of the source image or not\n"
          << "  [--width <int>] # resized image width\n"
@@ -111,14 +100,9 @@ static void printHelp()
          << "  [--hit_threshold <double>] # classifying plane distance threshold (0.0 usually)\n"
          << "  [--scale <double>] # HOG window scale factor\n"
          << "  [--nlevels <int>] # max number of HOG window scales\n"
-         << "  [--win_width <int>] # width of the window\n"
+         << "  [--win_width <int>] # width of the window (48 or 64)\n"
          << "  [--win_stride_width <int>] # distance by OX axis between neighbour wins\n"
          << "  [--win_stride_height <int>] # distance by OY axis between neighbour wins\n"
-         << "  [--block_width <int>] # width of the block\n"
-         << "  [--block_stride_width <int>] # distance by 0X axis between neighbour blocks\n"
-         << "  [--block_stride_height <int>] # distance by 0Y axis between neighbour blocks\n"
-         << "  [--cell_width <int>] # width of the cell\n"
-         << "  [--nbins <int>] # number of bins\n"
          << "  [--gr_threshold <int>] # merging similar rects constant\n"
          << "  [--gamma_correct <int>] # do gamma correction or not\n"
          << "  [--write_video <bool>] # write video or not\n"
@@ -158,8 +142,6 @@ Args::Args()
 {
     src_is_video = false;
     src_is_camera = false;
-    src_is_folder = false;
-    svm_load = false;
     camera_id = 0;
 
     write_video = false;
@@ -180,11 +162,6 @@ Args::Args()
     win_width = 48;
     win_stride_width = 8;
     win_stride_height = 8;
-    block_width = 16;
-    block_stride_width = 8;
-    block_stride_height = 8;
-    cell_width = 8;
-    nbins = 9;
 
     gamma_corr = true;
 }
@@ -209,11 +186,6 @@ Args Args::read(int argc, char** argv)
         else if (string(argv[i]) == "--win_width") args.win_width = atoi(argv[++i]);
         else if (string(argv[i]) == "--win_stride_width") args.win_stride_width = atoi(argv[++i]);
         else if (string(argv[i]) == "--win_stride_height") args.win_stride_height = atoi(argv[++i]);
-        else if (string(argv[i]) == "--block_width") args.block_width = atoi(argv[++i]);
-        else if (string(argv[i]) == "--block_stride_width") args.block_stride_width = atoi(argv[++i]);
-        else if (string(argv[i]) == "--block_stride_height") args.block_stride_height = atoi(argv[++i]);
-        else if (string(argv[i]) == "--cell_width") args.cell_width = atoi(argv[++i]);
-        else if (string(argv[i]) == "--nbins") args.nbins = atoi(argv[++i]);
         else if (string(argv[i]) == "--gr_threshold") args.gr_threshold = atoi(argv[++i]);
         else if (string(argv[i]) == "--gamma_correct") args.gamma_corr = (string(argv[++i]) == "true");
         else if (string(argv[i]) == "--write_video") args.write_video = (string(argv[++i]) == "true");
@@ -222,8 +194,6 @@ Args Args::read(int argc, char** argv)
         else if (string(argv[i]) == "--help") printHelp();
         else if (string(argv[i]) == "--video") { args.src = argv[++i]; args.src_is_video = true; }
         else if (string(argv[i]) == "--camera") { args.camera_id = atoi(argv[++i]); args.src_is_camera = true; }
-        else if (string(argv[i]) == "--folder") { args.src = argv[++i]; args.src_is_folder = true;}
-        else if (string(argv[i]) == "--svm") { args.svm = argv[++i]; args.svm_load = true;}
         else if (args.src.empty()) args.src = argv[i];
         else throw runtime_error((string("unknown key: ") + argv[i]));
     }
@@ -258,17 +228,16 @@ App::App(const Args& s)
 
     gamma_corr = args.gamma_corr;
 
+    if (args.win_width != 64 && args.win_width != 48)
+        args.win_width = 64;
+
     cout << "Scale: " << scale << endl;
     if (args.resize_src)
         cout << "Resized source: (" << args.width << ", " << args.height << ")\n";
     cout << "Group threshold: " << gr_threshold << endl;
     cout << "Levels number: " << nlevels << endl;
-    cout << "Win size: (" << args.win_width << ", " << args.win_width*2 << ")\n";
+    cout << "Win width: " << args.win_width << endl;
     cout << "Win stride: (" << args.win_stride_width << ", " << args.win_stride_height << ")\n";
-    cout << "Block size: (" << args.block_width << ", " << args.block_width << ")\n";
-    cout << "Block stride: (" << args.block_stride_width << ", " << args.block_stride_height << ")\n";
-    cout << "Cell size: (" << args.cell_width << ", " << args.cell_width << ")\n";
-    cout << "Bins number: " << args.nbins << endl;
     cout << "Hit threshold: " << hit_threshold << endl;
     cout << "Gamma correction: " << gamma_corr << endl;
     cout << endl;
@@ -280,58 +249,22 @@ void App::run()
     running = true;
     cv::VideoWriter video_writer;
 
+    Size win_size(args.win_width, args.win_width * 2); //(64, 128) or (48, 96)
     Size win_stride(args.win_stride_width, args.win_stride_height);
-    Size win_size(args.win_width, args.win_width * 2);
-    Size block_size(args.block_width, args.block_width);
-    Size block_stride(args.block_stride_width, args.block_stride_height);
-    Size cell_size(args.cell_width, args.cell_width);
 
-    cv::Ptr<cv::cuda::HOG> gpu_hog = cv::cuda::HOG::create(win_size, block_size, block_stride, cell_size, args.nbins);
-    cv::HOGDescriptor cpu_hog(win_size, block_size, block_stride, cell_size, args.nbins);
+    cv::Ptr<cv::cuda::HOG> gpu_hog = cv::cuda::HOG::create(win_size);
+    cv::HOGDescriptor cpu_hog(win_size, Size(16, 16), Size(8, 8), Size(8, 8), 9);
 
-    if(args.svm_load) {
-        std::vector<float> svm_model;
-        const std::string model_file_name = args.svm;
-        FileStorage ifs(model_file_name, FileStorage::READ);
-        if (ifs.isOpened()) {
-            ifs["svm_detector"] >> svm_model;
-        } else {
-            const std::string what =
-                    "could not load model for hog classifier from file: "
-                    + model_file_name;
-            throw std::runtime_error(what);
-        }
+    // Create HOG descriptors and detectors here
+    Mat detector = gpu_hog->getDefaultPeopleDetector();
 
-        // check if the variables are initialized
-        if (svm_model.empty()) {
-            const std::string what =
-                    "HoG classifier: svm model could not be loaded from file"
-                    + model_file_name;
-            throw std::runtime_error(what);
-        }
-
-        gpu_hog->setSVMDetector(svm_model);
-        cpu_hog.setSVMDetector(svm_model);
-    } else {
-        // Create HOG descriptors and detectors here
-        Mat detector = gpu_hog->getDefaultPeopleDetector();
-
-        gpu_hog->setSVMDetector(detector);
-        cpu_hog.setSVMDetector(detector);
-    }
-
-    cout << "gpusvmDescriptorSize : " << gpu_hog->getDescriptorSize()
-         << endl;
-    cout << "cpusvmDescriptorSize : " << cpu_hog.getDescriptorSize()
-         << endl;
+    gpu_hog->setSVMDetector(detector);
+    cpu_hog.setSVMDetector(detector);
 
     while (running)
     {
         VideoCapture vc;
         Mat frame;
-        vector<String> filenames;
-
-        unsigned int count = 1;
 
         if (args.src_is_video)
         {
@@ -339,14 +272,6 @@ void App::run()
             if (!vc.isOpened())
                 throw runtime_error(string("can't open video file: " + args.src));
             vc >> frame;
-        }
-        else if (args.src_is_folder) {
-            String folder = args.src;
-            cout << folder << endl;
-            glob(folder, filenames);
-            frame = imread(filenames[count]);	// 0 --> .gitignore
-            if (!frame.data)
-                cerr << "Problem loading image from folder!!!" << endl;
         }
         else if (args.src_is_camera)
         {
@@ -402,7 +327,7 @@ void App::run()
             {
                 cpu_hog.nlevels = nlevels;
                 cpu_hog.detectMultiScale(img, found, hit_threshold, win_stride,
-                                         Size(0, 0), scale, gr_threshold);
+                                          Size(0, 0), scale, gr_threshold);
             }
             hogWorkEnd();
 
@@ -417,20 +342,11 @@ void App::run()
                 putText(img_to_show, "Mode: GPU", Point(5, 25), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
             else
                 putText(img_to_show, "Mode: CPU", Point(5, 25), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
-            putText(img_to_show, "FPS HOG: " + hogWorkFps(), Point(5, 65), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
-            putText(img_to_show, "FPS total: " + workFps(), Point(5, 105), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
+            putText(img_to_show, "FPS (HOG only): " + hogWorkFps(), Point(5, 65), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
+            putText(img_to_show, "FPS (total): " + workFps(), Point(5, 105), FONT_HERSHEY_SIMPLEX, 1., Scalar(255, 100, 0), 2);
             imshow("opencv_gpu_hog", img_to_show);
 
             if (args.src_is_video || args.src_is_camera) vc >> frame;
-            if (args.src_is_folder) {
-                count++;
-                if (count < filenames.size()) {
-                    frame = imread(filenames[count]);
-                } else {
-                    Mat empty;
-                    frame = empty;
-                }
-            }
 
             workEnd();
 

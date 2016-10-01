@@ -57,7 +57,6 @@ template<typename _Tp> inline void copyVectorToUMat(const std::vector<_Tp>& v, O
         Mat(1, (int)(v.size()*sizeof(v[0])), CV_8U, (void*)&v[0]).copyTo(um);
 }
 
-#ifdef HAVE_OPENCL
 static bool
 ocl_HarrisResponses(const UMat& imgbuf,
                     const UMat& layerinfo,
@@ -65,7 +64,7 @@ ocl_HarrisResponses(const UMat& imgbuf,
                     UMat& responses,
                     int nkeypoints, int blockSize, float harris_k)
 {
-    size_t globalSize[] = {(size_t)nkeypoints};
+    size_t globalSize[] = {nkeypoints};
 
     float scale = 1.f/((1 << 2) * blockSize * 255.f);
     float scale_sq_sq = scale * scale * scale * scale;
@@ -87,7 +86,7 @@ ocl_ICAngles(const UMat& imgbuf, const UMat& layerinfo,
              const UMat& keypoints, UMat& responses,
              const UMat& umax, int nkeypoints, int half_k)
 {
-    size_t globalSize[] = {(size_t)nkeypoints};
+    size_t globalSize[] = {nkeypoints};
 
     ocl::Kernel icangle_ker("ORB_ICAngle", ocl::features2d::orb_oclsrc, "-D ORB_ANGLES");
     if( icangle_ker.empty() )
@@ -107,7 +106,7 @@ ocl_computeOrbDescriptors(const UMat& imgbuf, const UMat& layerInfo,
                           const UMat& keypoints, UMat& desc, const UMat& pattern,
                           int nkeypoints, int dsize, int wta_k)
 {
-    size_t globalSize[] = {(size_t)nkeypoints};
+    size_t globalSize[] = {nkeypoints};
 
     ocl::Kernel desc_ker("ORB_computeDescriptor", ocl::features2d::orb_oclsrc,
                          format("-D ORB_DESCRIPTORS -D WTA_K=%d", wta_k));
@@ -121,7 +120,7 @@ ocl_computeOrbDescriptors(const UMat& imgbuf, const UMat& layerInfo,
                          ocl::KernelArg::PtrReadOnly(pattern),
                          nkeypoints, dsize).run(1, globalSize, 0, true);
 }
-#endif
+
 
 /**
  * Function that computes the Harris responses in a
@@ -727,7 +726,6 @@ int ORB_Impl::defaultNorm() const
     return NORM_HAMMING;
 }
 
-#ifdef HAVE_OPENCL
 static void uploadORBKeypoints(const std::vector<KeyPoint>& src, std::vector<Vec3i>& buf, OutputArray dst)
 {
     size_t i, n = src.size();
@@ -760,7 +758,7 @@ static void uploadORBKeypoints(const std::vector<KeyPoint>& src,
     }
     copyVectorToUMat(buf, dst);
 }
-#endif
+
 
 /** Compute the ORB_Impl keypoints on an image
  * @param image_pyramid the image pyramid to compute the features and descriptors on
@@ -778,10 +776,6 @@ static void computeKeyPoints(const Mat& imagePyramid,
                              int edgeThreshold, int patchSize, int scoreType,
                              bool useOCL, int fastThreshold  )
 {
-#ifndef HAVE_OPENCL
-    (void)uimagePyramid;(void)ulayerInfo;(void)useOCL;
-#endif
-
     int i, nkeypoints, level, nlevels = (int)layerInfo.size();
     std::vector<int> nfeaturesPerLevel(nlevels);
 
@@ -868,7 +862,6 @@ static void computeKeyPoints(const Mat& imagePyramid,
     // Select best features using the Harris cornerness (better scoring than FAST)
     if( scoreType == ORB_Impl::HARRIS_SCORE )
     {
-#ifdef HAVE_OPENCL
         if( useOCL )
         {
             uploadORBKeypoints(allKeypoints, ukeypoints_buf, ukeypoints);
@@ -884,7 +877,6 @@ static void computeKeyPoints(const Mat& imagePyramid,
         }
 
         if( !useOCL )
-#endif
             HarrisResponses(imagePyramid, layerInfo, allKeypoints, 7, HARRIS_K);
 
         std::vector<KeyPoint> newAllKeypoints;
@@ -910,8 +902,6 @@ static void computeKeyPoints(const Mat& imagePyramid,
     }
 
     nkeypoints = (int)allKeypoints.size();
-
-#ifdef HAVE_OPENCL
     if( useOCL )
     {
         UMat uumax;
@@ -932,7 +922,6 @@ static void computeKeyPoints(const Mat& imagePyramid,
     }
 
     if( !useOCL )
-#endif
     {
         ICAngles(imagePyramid, layerInfo, allKeypoints, umax, halfPatchSize);
     }
@@ -1158,7 +1147,6 @@ void ORB_Impl::detectAndCompute( InputArray _image, InputArray _mask,
             GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);
         }
 
-#ifdef HAVE_OPENCL
         if( useOCL )
         {
             imagePyramid.copyTo(uimagePyramid);
@@ -1178,7 +1166,6 @@ void ORB_Impl::detectAndCompute( InputArray _image, InputArray _mask,
         }
 
         if( !useOCL )
-#endif
         {
             Mat descriptors = _descriptors.getMat();
             computeOrbDescriptors(imagePyramid, layerInfo, layerScale,

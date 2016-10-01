@@ -28,21 +28,15 @@ using namespace cv;
 
 int main(int argc, char* argv[])
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||show help message}{@image||input image}");
-    if (parser.has("help"))
+    if(argc < 2)
     {
-        parser.printMessage();
+        cout << "usage: " << argv[0] << " <Input image> "  << endl;
         exit(0);
     }
-    if (parser.get<string>("@image").empty())
-    {
-        parser.printMessage();
-        exit(0);
-    }
-
-    Mat I = imread(parser.get<string>("@image"));
 
     int num,type;
+
+    Mat I = imread(argv[1]);
 
     if(I.empty())
     {

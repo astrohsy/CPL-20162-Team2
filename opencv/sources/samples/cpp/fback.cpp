@@ -30,14 +30,8 @@ static void drawOptFlowMap(const Mat& flow, Mat& cflowmap, int step,
         }
 }
 
-int main(int argc, char** argv)
+int main(int, char**)
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
     VideoCapture cap(0);
     help();
     if( !cap.isOpened() )

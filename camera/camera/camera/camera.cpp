@@ -2,6 +2,9 @@
 #include <string>
 #include <thread>
 #include <future>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "EDSDK.h"
 #include "EDSDKTypes.h"
@@ -9,14 +12,17 @@
 #include "CameraModelLegacy.h"
 #include "CameraController.h"
 #include "CameraEventListener.h"
-
 #include "CameraControl.h"
 
 using namespace std;
+using namespace cv;
 
 bool threadExit;
 
 bool printingPicture(){
+	//namedWindow("Display window", 1);
+
+
 	while (1){
 		if (threadExit)
 			break;

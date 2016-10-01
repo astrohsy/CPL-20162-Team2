@@ -1,5 +1,5 @@
 /* OpenCV compiled as static or dynamic libs */
-#define BUILD_SHARED_LIBS
+/* #undef BUILD_SHARED_LIBS */
 
 /* Compile for 'real' NVIDIA GPU architectures */
 #define CUDA_ARCH_BIN ""
@@ -57,7 +57,6 @@
 
 /* DirectX */
 #define HAVE_DIRECTX
-#define HAVE_DIRECTX_NV12
 #define HAVE_D3D11
 #define HAVE_D3D10
 #define HAVE_D3D9
@@ -140,12 +139,6 @@
 /* PNG codec */
 #define HAVE_PNG
 
-/* Posix threads (pthreads) */
-/* #undef HAVE_PTHREADS */
-
-/* parallel_for with pthreads */
-/* #undef HAVE_PTHREADS_PF */
-
 /* Qt support */
 /* #undef HAVE_QT */
 
@@ -188,9 +181,3 @@
 
 /* gPhoto2 library */
 /* #undef HAVE_GPHOTO2 */
-
-/* VA library (libva) */
-/* #undef HAVE_VA */
-
-/* Intel VA-API/OpenCL */
-/* #undef HAVE_VA_INTEL */

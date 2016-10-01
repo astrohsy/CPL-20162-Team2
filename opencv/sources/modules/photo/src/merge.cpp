@@ -79,11 +79,9 @@ public:
             response = linearResponse(channels);
             response.at<Vec3f>(0) = response.at<Vec3f>(1);
         }
-
-        Mat log_response;
-        log(response, log_response);
-        CV_Assert(log_response.rows == LDR_SIZE && log_response.cols == 1 &&
-                  log_response.channels() == channels);
+        log(response, response);
+        CV_Assert(response.rows == LDR_SIZE && response.cols == 1 &&
+                  response.channels() == channels);
 
         Mat exp_values(times);
         log(exp_values, exp_values);
@@ -105,7 +103,7 @@ public:
             w /= channels;
 
             Mat response_img;
-            LUT(images[i], log_response, response_img);
+            LUT(images[i], response, response_img);
             split(response_img, splitted);
             for(int c = 0; c < channels; c++) {
                 result_split[c] += w.mul(splitted[c] - exp_values.at<float>((int)i));
@@ -196,11 +194,10 @@ public:
 
             wellexp = Mat::ones(size, CV_32F);
             for(int c = 0; c < channels; c++) {
-                Mat expo = splitted[c] - 0.5f;
-                pow(expo, 2.0f, expo);
-                expo = -expo / 0.08f;
-                exp(expo, expo);
-                wellexp = wellexp.mul(expo);
+                Mat exp = splitted[c] - 0.5f;
+                pow(exp, 2.0f, exp);
+                exp = -exp / 0.08f;
+                wellexp = wellexp.mul(exp);
             }
 
             pow(contrast, wcon, contrast);

@@ -60,7 +60,7 @@ static void writeMatInBin( const Mat& mat, const string& filename )
         fwrite( (void*)&mat.rows, sizeof(int), 1, f );
         fwrite( (void*)&mat.cols, sizeof(int), 1, f );
         fwrite( (void*)&type, sizeof(int), 1, f );
-        int dataSize = (int)(mat.step * mat.rows);
+        int dataSize = (int)(mat.step * mat.rows * mat.channels());
         fwrite( (void*)&dataSize, sizeof(int), 1, f );
         fwrite( (void*)mat.ptr(), 1, dataSize, f );
         fclose(f);
@@ -82,14 +82,13 @@ static Mat readMatFromBin( const string& filename )
         int step = dataSize / rows / CV_ELEM_SIZE(type);
         CV_Assert(step >= cols);
 
-        Mat returnMat = Mat(rows, step, type).colRange(0, cols);
+        Mat m = Mat(rows, step, type).colRange(0, cols);
 
-        size_t elements_read = fread( returnMat.ptr(), 1, dataSize, f );
+        size_t elements_read = fread( m.ptr(), 1, dataSize, f );
         CV_Assert(elements_read == (size_t)(dataSize));
-
         fclose(f);
 
-        return returnMat;
+        return m;
     }
     return Mat();
 }
@@ -162,8 +161,7 @@ protected:
             ts->set_failed_test_info( cvtest::TS::FAIL_INVALID_TEST_DATA );
         }
 
-        RNG rng;
-        image = cvtest::randomMat(rng, Size(50, 50), CV_8UC3, 0, 255, false);
+        image.create( 50, 50, CV_8UC3 );
         try
         {
             dextractor->compute( image, keypoints, descriptors );

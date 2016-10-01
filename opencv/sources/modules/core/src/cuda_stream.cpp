@@ -280,37 +280,32 @@ class cv::cuda::Stream::Impl
 {
 public:
     cudaStream_t stream;
-    bool ownStream;
-
-    Ptr<StackAllocator> stackAllocator;
+    Ptr<StackAllocator> stackAllocator_;
 
     Impl();
-    explicit Impl(cudaStream_t stream);
+    Impl(cudaStream_t stream);
 
     ~Impl();
 };
 
-cv::cuda::Stream::Impl::Impl() : stream(0), ownStream(false)
+cv::cuda::Stream::Impl::Impl() : stream(0)
 {
     cudaSafeCall( cudaStreamCreate(&stream) );
-    ownStream = true;
 
-    stackAllocator = makePtr<StackAllocator>(stream);
+    stackAllocator_ = makePtr<StackAllocator>(stream);
 }
 
-cv::cuda::Stream::Impl::Impl(cudaStream_t stream_) : stream(stream_), ownStream(false)
+cv::cuda::Stream::Impl::Impl(cudaStream_t stream_) : stream(stream_)
 {
-    stackAllocator = makePtr<StackAllocator>(stream);
+    stackAllocator_ = makePtr<StackAllocator>(stream);
 }
 
 cv::cuda::Stream::Impl::~Impl()
 {
-    stackAllocator.release();
+    stackAllocator_.release();
 
-    if (stream && ownStream)
-    {
+    if (stream)
         cudaStreamDestroy(stream);
-    }
 }
 
 #endif
@@ -521,11 +516,6 @@ cudaStream_t cv::cuda::StreamAccessor::getStream(const Stream& stream)
     return stream.impl_->stream;
 }
 
-Stream cv::cuda::StreamAccessor::wrapStream(cudaStream_t stream)
-{
-    return Stream(makePtr<Stream::Impl>(stream));
-}
-
 #endif
 
 /////////////////////////////////////////////////////////////
@@ -670,7 +660,7 @@ void cv::cuda::setBufferPoolConfig(int deviceId, size_t stackSize, int stackCoun
 
 #ifdef HAVE_CUDA
 
-cv::cuda::BufferPool::BufferPool(Stream& stream) : allocator_(stream.impl_->stackAllocator.get())
+cv::cuda::BufferPool::BufferPool(Stream& stream) : allocator_(stream.impl_->stackAllocator_.get())
 {
 }
 
@@ -703,39 +693,25 @@ class cv::cuda::Event::Impl
 {
 public:
     cudaEvent_t event;
-    bool ownEvent;
 
-    explicit Impl(unsigned int flags);
-    explicit Impl(cudaEvent_t event);
+    Impl(unsigned int flags);
     ~Impl();
 };
 
-cv::cuda::Event::Impl::Impl(unsigned int flags) : event(0), ownEvent(false)
+cv::cuda::Event::Impl::Impl(unsigned int flags) : event(0)
 {
     cudaSafeCall( cudaEventCreateWithFlags(&event, flags) );
-    ownEvent = true;
-}
-
-cv::cuda::Event::Impl::Impl(cudaEvent_t e) : event(e), ownEvent(false)
-{
 }
 
 cv::cuda::Event::Impl::~Impl()
 {
-    if (event && ownEvent)
-    {
+    if (event)
         cudaEventDestroy(event);
-    }
 }
 
 cudaEvent_t cv::cuda::EventAccessor::getEvent(const Event& event)
 {
     return event.impl_->event;
-}
-
-Event cv::cuda::EventAccessor::wrapEvent(cudaEvent_t event)
-{
-    return Event(makePtr<Event::Impl>(event));
 }
 
 #endif

@@ -27,19 +27,14 @@ static void help()
 
 int main( int argc, char** argv )
 {
-    cv::CommandLineParser parser(argc, argv, "{help h | |}{@image|../data/lena.jpg|}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
-    string imagename = parser.get<string>("@image");
+    help();
+    const char* imagename = argc > 1 ? argv[1] : "../data/lena.jpg";
 #if DEMO_MIXED_API_USE
     //! [iplimage]
-    Ptr<IplImage> iplimg(cvLoadImage(imagename.c_str())); // Ptr<T> is safe ref-counting pointer class
+    Ptr<IplImage> iplimg(cvLoadImage(imagename)); // Ptr<T> is safe ref-counting pointer class
     if(!iplimg)
     {
-        fprintf(stderr, "Can not load image %s\n", imagename.c_str());
+        fprintf(stderr, "Can not load image %s\n", imagename);
         return -1;
     }
     Mat img = cv::cvarrToMat(iplimg); // cv::Mat replaces the CvMat and IplImage, but it's easy to convert
@@ -50,7 +45,7 @@ int main( int argc, char** argv )
     Mat img = imread(imagename); // the newer cvLoadImage alternative, MATLAB-style function
     if(img.empty())
     {
-        fprintf(stderr, "Can not load image %s\n", imagename.c_str());
+        fprintf(stderr, "Can not load image %s\n", imagename);
         return -1;
     }
 #endif

@@ -59,7 +59,6 @@ public class Puzzle15Activity extends Activity implements CvCameraViewListener, 
         Log.d(TAG, "Creating and setting view");
         mOpenCvCameraView = (CameraBridgeViewBase) new JavaCameraView(this, -1);
         setContentView(mOpenCvCameraView);
-        mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mPuzzle15 = new Puzzle15Processor();
         mPuzzle15.prepareNewGame();

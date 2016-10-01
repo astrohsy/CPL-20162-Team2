@@ -148,33 +148,23 @@ static void writeOpticalFlowToFile(const Mat_<Point2f>& flow, const string& file
 
 int main(int argc, const char* argv[])
 {
-    cv::CommandLineParser parser(argc, argv, "{help h || show help message}"
-            "{ @frame0 | | frame 0}{ @frame1 | | frame 1}{ @output | | output flow}");
-    if (parser.has("help"))
+    if (argc < 3)
     {
-        parser.printMessage();
-        return 0;
-    }
-    string frame0_name = parser.get<string>("@frame0");
-    string frame1_name = parser.get<string>("@frame1");
-    string file = parser.get<string>("@output");
-    if (frame0_name.empty() || frame1_name.empty() || file.empty())
-    {
-        cerr << "Usage : " << argv[0] << " [<frame0>] [<frame1>] [<output_flow>]" << endl;
+        cerr << "Usage : " << argv[0] << "<frame0> <frame1> [<output_flow>]" << endl;
         return -1;
     }
 
-    Mat frame0 = imread(frame0_name, IMREAD_GRAYSCALE);
-    Mat frame1 = imread(frame1_name, IMREAD_GRAYSCALE);
+    Mat frame0 = imread(argv[1], IMREAD_GRAYSCALE);
+    Mat frame1 = imread(argv[2], IMREAD_GRAYSCALE);
 
     if (frame0.empty())
     {
-        cerr << "Can't open image ["  << parser.get<string>("frame0") << "]" << endl;
+        cerr << "Can't open image ["  << argv[1] << "]" << endl;
         return -1;
     }
     if (frame1.empty())
     {
-        cerr << "Can't open image ["  << parser.get<string>("frame1") << "]" << endl;
+        cerr << "Can't open image ["  << argv[2] << "]" << endl;
         return -1;
     }
 
@@ -194,8 +184,9 @@ int main(int argc, const char* argv[])
 
     Mat out;
     drawOpticalFlow(flow, out);
-    if (!file.empty())
-        writeOpticalFlowToFile(flow, file);
+
+    if (argc == 4)
+        writeOpticalFlowToFile(flow, argv[3]);
 
     imshow("Flow", out);
     waitKey();

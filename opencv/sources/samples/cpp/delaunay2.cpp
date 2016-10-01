@@ -103,14 +103,9 @@ static void paint_voronoi( Mat& img, Subdiv2D& subdiv )
 }
 
 
-int main( int argc, char** argv )
+int main( int, char** )
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
+    help();
 
     Scalar active_facet_color(0, 0, 255), delaunay_color(255,255,255);
     Rect rect(0, 0, 600, 600);

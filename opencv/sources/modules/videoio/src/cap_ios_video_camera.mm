@@ -41,9 +41,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
 
 
 
-@interface CvVideoCamera () {
-    int recordingCountDown;
-}
+@interface CvVideoCamera ()
 
 - (void)createVideoDataOutput;
 - (void)createVideoFileOutput;
@@ -100,7 +98,6 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
 
 - (void)start;
 {
-    recordingCountDown = 10;
     [super start];
 
     if (self.recordVideo == YES) {
@@ -298,26 +295,12 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
 
 
     // set default FPS
-    AVCaptureDeviceInput *currentInput = [self.captureSession.inputs objectAtIndex:0];
-    AVCaptureDevice *device = currentInput.device;
-
-    NSError *error = nil;
-    [device lockForConfiguration:&error];
-
-    float maxRate = ((AVFrameRateRange*) [device.activeFormat.videoSupportedFrameRateRanges objectAtIndex:0]).maxFrameRate;
-    if (maxRate > self.defaultFPS - 1 && error == nil) {
-        [device setActiveVideoMinFrameDuration:CMTimeMake(1, self.defaultFPS)];
-        [device setActiveVideoMaxFrameDuration:CMTimeMake(1, self.defaultFPS)];
-        NSLog(@"[Camera] FPS set to %d", self.defaultFPS);
-    } else {
-        NSLog(@"[Camera] unable to set defaultFPS at %d FPS, max is %f FPS", self.defaultFPS, maxRate);
+    if ([self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo].supportsVideoMinFrameDuration) {
+        [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo].videoMinFrameDuration = CMTimeMake(1, self.defaultFPS);
     }
-
-    if (error != nil) {
-        NSLog(@"[Camera] unable to set defaultFPS: %@", error);
+    if ([self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo].supportsVideoMaxFrameDuration) {
+        [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo].videoMaxFrameDuration = CMTimeMake(1, self.defaultFPS);
     }
-
-    [device unlockForConfiguration];
 
     // set video mirroring for front camera (more intuitive)
     if ([self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo].supportsVideoMirroring) {
@@ -346,7 +329,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
     [self.videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
 
 
-    NSLog(@"[Camera] created AVCaptureVideoDataOutput");
+    NSLog(@"[Camera] created AVCaptureVideoDataOutput at %d FPS", self.defaultFPS);
 }
 
 
@@ -554,8 +537,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
         });
 
 
-        recordingCountDown--;
-        if (self.recordVideo == YES && recordingCountDown < 0) {
+        if (self.recordVideo == YES) {
             lastSampleTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
 //			CMTimeShow(lastSampleTime);
             if (self.recordAssetWriter.status != AVAssetWriterStatusWriting) {
@@ -575,8 +557,6 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;}
                                                   withPresentationTime:lastSampleTime] ) {
                     NSLog(@"Video Writing Error");
                 }
-                if (pixelBuffer != nullptr)
-                    CVPixelBufferRelease(pixelBuffer);
             }
 
         }

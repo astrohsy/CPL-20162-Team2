@@ -7,7 +7,7 @@
 #endif
 
 #include <iostream>
-#include "opencv2/cvconfig.h"
+#include "cvconfig.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/cudaarithm.hpp"
 

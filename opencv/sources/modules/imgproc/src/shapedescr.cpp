@@ -43,171 +43,163 @@
 namespace cv
 {
 
-// inner product
-static float innerProduct(Point2f &v1, Point2f &v2)
+static int intersectLines( double x1, double dx1, double y1, double dy1,
+                          double x2, double dx2, double y2, double dy2, double *t2 )
 {
-    return v1.x * v2.y - v1.y * v2.x;
+    double d = dx1 * dy2 - dx2 * dy1;
+    int result = -1;
+
+    if( d != 0 )
+    {
+        *t2 = ((x2 - x1) * dy1 - (y2 - y1) * dx1) / d;
+        result = 0;
+    }
+    return result;
 }
 
-static void findCircle3pts(Point2f *pts, Point2f &center, float &radius)
+static bool findCircle( Point2f pt0, Point2f pt1, Point2f pt2,
+                       Point2f* center, float* radius )
 {
-    // two edges of the triangle v1, v2
-    Point2f v1 = pts[1] - pts[0];
-    Point2f v2 = pts[2] - pts[0];
+    double x1 = (pt0.x + pt1.x) * 0.5;
+    double dy1 = pt0.x - pt1.x;
+    double x2 = (pt1.x + pt2.x) * 0.5;
+    double dy2 = pt1.x - pt2.x;
+    double y1 = (pt0.y + pt1.y) * 0.5;
+    double dx1 = pt1.y - pt0.y;
+    double y2 = (pt1.y + pt2.y) * 0.5;
+    double dx2 = pt2.y - pt1.y;
+    double t = 0;
 
-    if (innerProduct(v1, v2) == 0.0f)
+    if( intersectLines( x1, dx1, y1, dy1, x2, dx2, y2, dy2, &t ) >= 0 )
     {
-        // v1, v2 colineation, can not determine a unique circle
-        // find the longtest distance as diameter line
-        float d1 = (float)norm(pts[0] - pts[1]);
-        float d2 = (float)norm(pts[0] - pts[2]);
-        float d3 = (float)norm(pts[1] - pts[2]);
-        if (d1 >= d2 && d1 >= d3)
-        {
-            center = (pts[0] + pts[1]) / 2.0f;
-            radius = (d1 / 2.0f);
-        }
-        else if (d2 >= d1 && d2 >= d3)
-        {
-            center = (pts[0] + pts[2]) / 2.0f;
-            radius = (d2 / 2.0f);
-        }
-        else if (d3 >= d1 && d3 >= d2)
-        {
-            center = (pts[1] + pts[2]) / 2.0f;
-            radius = (d3 / 2.0f);
-        }
+        center->x = (float) (x2 + dx2 * t);
+        center->y = (float) (y2 + dy2 * t);
+        *radius = (float)norm(*center - pt0);
+        return true;
     }
-    else
-    {
-        // center is intersection of midperpendicular lines of the two edges v1, v2
-        // a1*x + b1*y = c1 where a1 = v1.x, b1 = v1.y
-        // a2*x + b2*y = c2 where a2 = v2.x, b2 = v2.y
-        Point2f midPoint1 = (pts[0] + pts[1]) / 2.0f;
-        float c1 = midPoint1.x * v1.x + midPoint1.y * v1.y;
-        Point2f midPoint2 = (pts[0] + pts[2]) / 2.0f;
-        float c2 = midPoint2.x * v2.x + midPoint2.y * v2.y;
-        float det = v1.x * v2.y - v1.y * v2.x;
-        float cx = (c1 * v2.y - c2 * v1.y) / det;
-        float cy = (v1.x * c2 - v2.x * c1) / det;
-        center.x = (float)cx;
-        center.y = (float)cy;
-        cx -= pts[0].x;
-        cy -= pts[0].y;
-        radius = (float)(std::sqrt(cx *cx + cy * cy));
-    }
+
+    center->x = center->y = 0.f;
+    *radius = 0;
+    return false;
 }
 
-const float EPS = 1.0e-4f;
 
-static void findEnclosingCircle3pts_orLess_32f(Point2f *pts, int count, Point2f &center, float &radius)
+static double pointInCircle( Point2f pt, Point2f center, float radius )
 {
-    switch (count)
-    {
-    case 1:
-        center = pts[0];
-        radius = 0.0f;
-        break;
-    case 2:
-        center.x = (pts[0].x + pts[1].x) / 2.0f;
-        center.y = (pts[0].y + pts[1].y) / 2.0f;
-        radius = (float)(norm(pts[0] - pts[1]) / 2.0);
-        break;
-    case 3:
-        findCircle3pts(pts, center, radius);
-        break;
-    default:
-        break;
-    }
-
-    radius += EPS;
+    double dx = pt.x - center.x;
+    double dy = pt.y - center.y;
+    return (double)radius*radius - dx*dx - dy*dy;
 }
 
-template<typename PT>
-static void findThirdPoint(const PT *pts, int i, int j, Point2f &center, float &radius)
-{
-    center.x = (float)(pts[j].x + pts[i].x) / 2.0f;
-    center.y = (float)(pts[j].y + pts[i].y) / 2.0f;
-    float dx = (float)(pts[j].x - pts[i].x);
-    float dy = (float)(pts[j].y - pts[i].y);
-    radius = (float)norm(Point2f(dx, dy)) / 2.0f + EPS;
 
-    for (int k = 0; k < j; ++k)
-    {
-        dx = center.x - (float)pts[k].x;
-        dy = center.y - (float)pts[k].y;
-        if (norm(Point2f(dx, dy)) < radius)
+static int findEnslosingCicle4pts_32f( Point2f* pts, Point2f& _center, float& _radius )
+{
+    int shuffles[4][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {2, 3, 0, 1}, {2, 3, 1, 0} };
+
+    int idxs[4] = { 0, 1, 2, 3 };
+    int i, j, k = 1, mi = 0;
+    float max_dist = 0;
+    Point2f center;
+    Point2f min_center;
+    float radius, min_radius = FLT_MAX;
+    Point2f res_pts[4];
+
+    center = min_center = pts[0];
+    radius = 1.f;
+
+    for( i = 0; i < 4; i++ )
+        for( j = i + 1; j < 4; j++ )
         {
-            continue;
+            float dist = (float)norm(pts[i] - pts[j]);
+
+            if( max_dist < dist )
+            {
+                max_dist = dist;
+                idxs[0] = i;
+                idxs[1] = j;
+            }
+        }
+
+    if( max_dist > 0 )
+    {
+        k = 2;
+        for( i = 0; i < 4; i++ )
+        {
+            for( j = 0; j < k; j++ )
+                if( i == idxs[j] )
+                    break;
+            if( j == k )
+                idxs[k++] = i;
+        }
+
+        center = Point2f( (pts[idxs[0]].x + pts[idxs[1]].x)*0.5f,
+                          (pts[idxs[0]].y + pts[idxs[1]].y)*0.5f );
+        radius = (float)(norm(pts[idxs[0]] - center)*1.03);
+        if( radius < 1.f )
+            radius = 1.f;
+
+        if( pointInCircle( pts[idxs[2]], center, radius ) >= 0 &&
+            pointInCircle( pts[idxs[3]], center, radius ) >= 0 )
+        {
+            k = 2; //rand()%2+2;
         }
         else
         {
-            Point2f ptsf[3];
-            ptsf[0] = (Point2f)pts[i];
-            ptsf[1] = (Point2f)pts[j];
-            ptsf[2] = (Point2f)pts[k];
-            findEnclosingCircle3pts_orLess_32f(ptsf, 3, center, radius);
+            mi = -1;
+            for( i = 0; i < 4; i++ )
+            {
+                if( findCircle( pts[shuffles[i][0]], pts[shuffles[i][1]],
+                                pts[shuffles[i][2]], &center, &radius ) )
+                {
+                    radius *= 1.03f;
+                    if( radius < 2.f )
+                        radius = 2.f;
+
+                    if( pointInCircle( pts[shuffles[i][3]], center, radius ) >= 0 &&
+                        min_radius > radius )
+                    {
+                        min_radius = radius;
+                        min_center = center;
+                        mi = i;
+                    }
+                }
+            }
+            CV_Assert( mi >= 0 );
+            if( mi < 0 )
+                mi = 0;
+            k = 3;
+            center = min_center;
+            radius = min_radius;
+            for( i = 0; i < 4; i++ )
+                idxs[i] = shuffles[mi][i];
         }
     }
-}
 
+    _center = center;
+    _radius = radius;
 
-template<typename PT>
-void findSecondPoint(const PT *pts, int i, Point2f &center, float &radius)
-{
-    center.x = (float)(pts[0].x + pts[i].x) / 2.0f;
-    center.y = (float)(pts[0].y + pts[i].y) / 2.0f;
-    float dx = (float)(pts[0].x - pts[i].x);
-    float dy = (float)(pts[0].y - pts[i].y);
-    radius = (float)norm(Point2f(dx, dy)) / 2.0f + EPS;
+    /* reorder output points */
+    for( i = 0; i < 4; i++ )
+        res_pts[i] = pts[idxs[i]];
 
-    for (int j = 1; j < i; ++j)
+    for( i = 0; i < 4; i++ )
     {
-        dx = center.x - (float)pts[j].x;
-        dy = center.y - (float)pts[j].y;
-        if (norm(Point2f(dx, dy)) < radius)
-        {
-            continue;
-        }
-        else
-        {
-            findThirdPoint(pts, i, j, center, radius);
-        }
+        pts[i] = res_pts[i];
+        CV_Assert( pointInCircle( pts[i], center, radius ) >= 0 );
     }
+
+    return k;
 }
 
-
-template<typename PT>
-static void findMinEnclosingCircle(const PT *pts, int count, Point2f &center, float &radius)
-{
-    center.x = (float)(pts[0].x + pts[1].x) / 2.0f;
-    center.y = (float)(pts[0].y + pts[1].y) / 2.0f;
-    float dx = (float)(pts[0].x - pts[1].x);
-    float dy = (float)(pts[0].y - pts[1].y);
-    radius = (float)norm(Point2f(dx, dy)) / 2.0f + EPS;
-
-    for (int i = 2; i < count; ++i)
-    {
-        dx = (float)pts[i].x - center.x;
-        dy = (float)pts[i].y - center.y;
-        float d = (float)norm(Point2f(dx, dy));
-        if (d < radius)
-        {
-            continue;
-        }
-        else
-        {
-            findSecondPoint(pts, i, center, radius);
-        }
-    }
 }
-} // namespace cv
 
-// see Welzl, Emo. Smallest enclosing disks (balls and ellipsoids). Springer Berlin Heidelberg, 1991.
 void cv::minEnclosingCircle( InputArray _points, Point2f& _center, float& _radius )
 {
+    int max_iters = 100;
+    const float eps = FLT_EPSILON*2;
+    bool result = false;
     Mat points = _points.getMat();
-    int count = points.checkVector(2);
+    int i, j, k, count = points.checkVector(2);
     int depth = points.depth();
     Point2f center;
     float radius = 0.f;
@@ -223,50 +215,78 @@ void cv::minEnclosingCircle( InputArray _points, Point2f& _center, float& _radiu
     const Point* ptsi = points.ptr<Point>();
     const Point2f* ptsf = points.ptr<Point2f>();
 
-    // point count <= 3
-    if (count <= 3)
+    Point2f pt = is_float ? ptsf[0] : Point2f((float)ptsi[0].x,(float)ptsi[0].y);
+    Point2f pts[4] = {pt, pt, pt, pt};
+
+    for( i = 1; i < count; i++ )
     {
-        Point2f ptsf3[3];
-        for (int i = 0; i < count; ++i)
-        {
-            ptsf3[i] = (is_float) ? ptsf[i] : Point2f((float)ptsi[i].x, (float)ptsi[i].y);
-        }
-        findEnclosingCircle3pts_orLess_32f(ptsf3, count, center, radius);
-        _center = center;
-        _radius = radius;
-        return;
+        pt = is_float ? ptsf[i] : Point2f((float)ptsi[i].x, (float)ptsi[i].y);
+
+        if( pt.x < pts[0].x )
+            pts[0] = pt;
+        if( pt.x > pts[1].x )
+            pts[1] = pt;
+        if( pt.y < pts[2].y )
+            pts[2] = pt;
+        if( pt.y > pts[3].y )
+            pts[3] = pt;
     }
 
-    if (is_float)
+    for( k = 0; k < max_iters; k++ )
     {
-        findMinEnclosingCircle<Point2f>(ptsf, count, center, radius);
-#if 0
-        for (size_t m = 0; m < count; ++m)
+        double min_delta = 0, delta;
+        Point2f farAway(0,0);
+        /*only for first iteration because the alg is repared at the loop's foot*/
+        if( k == 0 )
+            findEnslosingCicle4pts_32f( pts, center, radius );
+
+        for( i = 0; i < count; i++ )
         {
-            float d = (float)norm(ptsf[m] - center);
-            if (d > radius)
+            pt = is_float ? ptsf[i] : Point2f((float)ptsi[i].x,(float)ptsi[i].y);
+
+            delta = pointInCircle( pt, center, radius );
+            if( delta < min_delta )
             {
-                printf("error!\n");
+                min_delta = delta;
+                farAway = pt;
             }
         }
-#endif
-    }
-    else
-    {
-        findMinEnclosingCircle<Point>(ptsi, count, center, radius);
-#if 0
-        for (size_t m = 0; m < count; ++m)
+        result = min_delta >= 0;
+        if( result )
+            break;
+
+        Point2f ptsCopy[4];
+        // find good replacement partner for the point which is at most far away,
+        // starting with the one that lays in the actual circle (i=3)
+        for( i = 3; i >= 0; i-- )
         {
-            double dx = ptsi[m].x - center.x;
-            double dy = ptsi[m].y - center.y;
-            double d = std::sqrt(dx * dx + dy * dy);
-            if (d > radius)
+            for( j = 0; j < 4; j++ )
+                ptsCopy[j] = i != j ? pts[j] : farAway;
+
+            findEnslosingCicle4pts_32f( ptsCopy, center, radius );
+            if( pointInCircle( pts[i], center, radius ) >= 0)
             {
-                printf("error!\n");
+                // replaced one again in the new circle?
+                pts[i] = farAway;
+                break;
             }
         }
-#endif
     }
+
+    if( !result )
+    {
+        radius = 0.f;
+        for( i = 0; i < count; i++ )
+        {
+            pt = is_float ? ptsf[i] : Point2f((float)ptsi[i].x,(float)ptsi[i].y);
+            float dx = center.x - pt.x, dy = center.y - pt.y;
+            float t = dx*dx + dy*dy;
+            radius = MAX(radius, t);
+        }
+
+        radius = (float)(std::sqrt(radius)*(1 + eps));
+    }
+
     _center = center;
     _radius = radius;
 }
@@ -281,7 +301,9 @@ double cv::arcLength( InputArray _curve, bool is_closed )
     CV_Assert( count >= 0 && (depth == CV_32F || depth == CV_32S));
     double perimeter = 0;
 
-    int i;
+    int i, j = 0;
+    const int N = 16;
+    float buf[N];
 
     if( count <= 1 )
         return 0.;
@@ -297,8 +319,15 @@ double cv::arcLength( InputArray _curve, bool is_closed )
     {
         Point2f p = is_float ? ptf[i] : Point2f((float)pti[i].x,(float)pti[i].y);
         float dx = p.x - prev.x, dy = p.y - prev.y;
-        perimeter += std::sqrt(dx*dx + dy*dy);
+        buf[j] = dx*dx + dy*dy;
 
+        if( ++j == N || i == count-1 )
+        {
+            Mat bufmat(1, j, CV_32F, buf);
+            sqrt(bufmat, bufmat);
+            for( ; j > 0; j-- )
+                perimeter += buf[j-1];
+        }
         prev = p;
     }
 

@@ -123,21 +123,14 @@ void mouseHandler(int event, int x, int y, int, void*)
 
 int main(int argc, char **argv)
 {
-    cv::CommandLineParser parser(argc, argv, "{help h | | show help message}{@input | | input image}");
-    if (parser.has("help"))
+
+    if(argc != 2)
     {
-        parser.printMessage();
-        return 0;
-    }
-    string input_image = parser.get<string>("@input");
-    if (input_image.empty())
-    {
-        parser.printMessage();
-        parser.printErrors();
-        return 0;
+        cout << "usage: " << argv[0] << " <input_image>" << endl;
+        exit(1);
     }
 
-    Mat src = imread(input_image);
+    Mat src = imread(argv[1]);
 
     minx = INT_MAX; miny = INT_MAX; maxx = INT_MIN; maxy = INT_MIN;
 

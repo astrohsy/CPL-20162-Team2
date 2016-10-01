@@ -16,14 +16,9 @@ static Scalar randomColor(RNG& rng)
     return Scalar(icolor&255, (icolor>>8)&255, (icolor>>16)&255);
 }
 
-int main(int argc, char** argv)
+int main()
 {
-    cv::CommandLineParser parser(argc, argv, "{help h||}");
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
+    help();
     char wndname[] = "Drawing Demo";
     const int NUMBER = 100;
     const int DELAY = 5;

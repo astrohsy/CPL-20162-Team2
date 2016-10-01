@@ -44,11 +44,7 @@
 
 #if !defined HAVE_CUDA || defined(CUDA_DISABLER)
 
-cv::Ptr<cv::cuda::OpticalFlowDual_TVL1> cv::cuda::OpticalFlowDual_TVL1::create(double, double, double, int, int, double, int, double, double, bool)
-{
-    throw_no_cuda();
-    return Ptr<cv::cuda::OpticalFlowDual_TVL1>();
-}
+Ptr<OpticalFlowDual_TVL1> cv::cuda::OpticalFlowDual_TVL1::create(double, double, double, int, int, double, int, double, double, bool) { throw_no_cuda(); return Ptr<OpticalFlowDual_TVL1>(); }
 
 #else
 

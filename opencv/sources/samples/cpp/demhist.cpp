@@ -64,17 +64,14 @@ static void help()
 
 const char* keys =
 {
-    "{help h||}{@image|../data/baboon.jpg|input image file}"
+    "{@image|../data/baboon.jpg|input image file}"
 };
 
 int main( int argc, const char** argv )
 {
+    help();
+
     CommandLineParser parser(argc, argv, keys);
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
     string inputImage = parser.get<string>(0);
 
     // Load the source image. HighGUI use.

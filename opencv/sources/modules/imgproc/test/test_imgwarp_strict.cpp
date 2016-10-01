@@ -651,7 +651,8 @@ private:
 };
 
 CV_Remap_Test::CV_Remap_Test() :
-    CV_ImageWarpBaseTest(), borderType(-1)
+    CV_ImageWarpBaseTest(), mapx(), mapy(),
+    borderType(-1), borderValue()
 {
     funcs[0] = &CV_Remap_Test::remap_nearest;
     funcs[1] = &CV_Remap_Test::remap_generic;
@@ -672,7 +673,7 @@ void CV_Remap_Test::generate_test_data()
     // generating the mapx, mapy matrices
     static const int mapx_types[] = { CV_16SC2, CV_32FC1, CV_32FC2 };
     mapx.create(dst.size(), mapx_types[rng.uniform(0, sizeof(mapx_types) / sizeof(int))]);
-    mapy.release();
+    mapy = Mat();
 
     const int n = std::min(std::min(src.cols, src.rows) / 10 + 1, 2);
     float _n = 0; //static_cast<float>(-n);
@@ -699,7 +700,7 @@ void CV_Remap_Test::generate_test_data()
                     {
                         MatIterator_<ushort> begin_y = mapy.begin<ushort>(), end_y = mapy.end<ushort>();
                         for ( ; begin_y != end_y; ++begin_y)
-                            *begin_y = static_cast<ushort>(rng.uniform(0, 1024));
+                            begin_y[0] = static_cast<short>(rng.uniform(0, 1024));
                     }
                     break;
 
@@ -707,7 +708,7 @@ void CV_Remap_Test::generate_test_data()
                     {
                         MatIterator_<short> begin_y = mapy.begin<short>(), end_y = mapy.end<short>();
                         for ( ; begin_y != end_y; ++begin_y)
-                            *begin_y = static_cast<short>(rng.uniform(0, 1024));
+                            begin_y[0] = static_cast<short>(rng.uniform(0, 1024));
                     }
                     break;
                 }
@@ -724,8 +725,8 @@ void CV_Remap_Test::generate_test_data()
             MatIterator_<float> begin_y = mapy.begin<float>();
             for ( ; begin_x != end_x; ++begin_x, ++begin_y)
             {
-                *begin_x = rng.uniform(_n, fscols);
-                *begin_y = rng.uniform(_n, fsrows);
+                begin_x[0] = rng.uniform(_n, fscols);
+                begin_y[0] = rng.uniform(_n, fsrows);
             }
         }
         break;
@@ -793,6 +794,23 @@ void CV_Remap_Test::prepare_test_data_for_reference_func()
 {
     CV_ImageWarpBaseTest::prepare_test_data_for_reference_func();
     convert_maps();
+/*
+    const int ksize = 3;
+    Mat kernel = getStructuringElement(CV_MOP_ERODE, Size(ksize, ksize));
+    Mat mask(src.size(), CV_8UC1, Scalar::all(255)), dst_mask;
+    cv::erode(src, erode_src, kernel);
+    cv::erode(mask, dst_mask, kernel, Point(-1, -1), 1, BORDER_CONSTANT, Scalar::all(0));
+    bitwise_not(dst_mask, mask);
+    src.copyTo(erode_src, mask);
+    dst_mask.release();
+
+    mask = Scalar::all(0);
+    kernel = getStructuringElement(CV_MOP_DILATE, kernel.size());
+    cv::dilate(src, dilate_src, kernel);
+    cv::dilate(mask, dst_mask, kernel, Point(-1, -1), 1, BORDER_CONSTANT, Scalar::all(255));
+    src.copyTo(dilate_src, dst_mask);
+    dst_mask.release();
+*/
 }
 
 void CV_Remap_Test::run_reference_func()

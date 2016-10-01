@@ -13,13 +13,15 @@ using namespace cv;
 int main(int argc, char** argv)
 {
     std::string in;
-    cv::CommandLineParser parser(argc, argv, "{@input|../data/building.jpg|input image}{help h||show help message}");
-    if (parser.has("help"))
+    if (argc != 2)
     {
-        parser.printMessage();
-        return 0;
+        std::cout << "Usage: lsd_lines [input image]. Now loading ../data/building.jpg" << std::endl;
+        in = "../data/building.jpg";
     }
-    in = parser.get<string>("@input");
+    else
+    {
+        in = argv[1];
+    }
 
     Mat image = imread(in, IMREAD_GRAYSCALE);
 

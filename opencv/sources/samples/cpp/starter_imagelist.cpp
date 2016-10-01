@@ -62,18 +62,13 @@ int process(vector<string> images)
 
 int main(int ac, char** av)
 {
-  cv::CommandLineParser parser(ac, av, "{help h||}{@input||}");
-  if (parser.has("help"))
-  {
-      help(av);
-      return 0;
-  }
-  std::string arg = parser.get<std::string>("@input");
-  if (arg.empty())
+
+  if (ac != 2)
   {
     help(av);
     return 1;
   }
+  std::string arg = av[1];
   vector<string> imagelist;
 
   if (!readStringList(arg,imagelist))

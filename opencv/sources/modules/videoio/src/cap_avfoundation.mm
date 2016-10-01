@@ -910,7 +910,7 @@ IplImage* CvCaptureFile::retrieveFramePixelBuffer() {
     }
 
 
-    AVAssetReaderOutput * output = [mMovieReader.outputs objectAtIndex:0];
+    AVAssetReaderTrackOutput * output = [mMovieReader.outputs objectAtIndex:0];
     CMSampleBufferRef sampleBuffer = [output copyNextSampleBuffer];
     if (!sampleBuffer) {
         [localpool drain];

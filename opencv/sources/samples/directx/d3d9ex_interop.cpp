@@ -108,7 +108,7 @@ public:
         if (!m_cap.read(m_frame_bgr))
             return -1;
 
-        cv::cvtColor(m_frame_bgr, m_frame_rgba, CV_BGR2BGRA);
+        cv::cvtColor(m_frame_bgr, m_frame_rgba, CV_RGB2RGBA);
 
         D3DLOCKED_RECT memDesc = { 0, NULL };
         RECT rc = { 0, 0, m_width, m_height };
@@ -143,9 +143,6 @@ public:
             if (m_shutdown)
                 return 0;
 
-            // capture user input once
-            MODE mode = m_mode == MODE_GPU_NV12 ? MODE_GPU_RGBA : m_mode;
-
             HRESULT r;
             LPDIRECT3DSURFACE9 pSurface;
 
@@ -155,10 +152,12 @@ public:
                 return -1;
             }
 
-            m_timer.start();
-
-            switch (mode)
+            switch (m_mode)
             {
+                case MODE_NOP:
+                    // no processing
+                    break;
+
                 case MODE_CPU:
                 {
                     // process video frame on CPU
@@ -173,7 +172,7 @@ public:
 
                     cv::Mat m(m_height, m_width, CV_8UC4, memDesc.pBits, memDesc.Pitch);
 
-                    if (m_demo_processing)
+                    if (!m_disableProcessing)
                     {
                         // blur D3D9 surface with OpenCV on CPU
                         cv::blur(m, m, cv::Size(15, 15), cv::Point(-7, -7));
@@ -188,14 +187,14 @@ public:
                     break;
                 }
 
-                case MODE_GPU_RGBA:
+                case MODE_GPU:
                 {
                     // process video frame on GPU
                     cv::UMat u;
 
                     cv::directx::convertFromDirect3DSurface9(pSurface, u);
 
-                    if (m_demo_processing)
+                    if (!m_disableProcessing)
                     {
                         // blur D3D9 surface with OpenCV on GPU with OpenCL
                         cv::blur(u, u, cv::Size(15, 15), cv::Point(-7, -7));
@@ -208,9 +207,7 @@ public:
 
             } // switch
 
-            m_timer.stop();
-
-            print_info(pSurface, m_mode, m_timer.time(Timer::UNITS::MSEC), m_oclDevName);
+            print_info(pSurface, m_mode, getFps(), m_oclDevName);
 
             // traditional DX render pipeline:
             //   BitBlt surface to backBuffer and flip backBuffer to frontBuffer
@@ -239,7 +236,7 @@ public:
     } // render()
 
 
-    void print_info(LPDIRECT3DSURFACE9 pSurface, int mode, float time, cv::String oclDevName)
+    void print_info(LPDIRECT3DSURFACE9 pSurface, int mode, float fps, cv::String oclDevName)
     {
         HDC hDC;
 
@@ -262,17 +259,12 @@ public:
             int  y = 0;
 
             buf[0] = 0;
-            sprintf(buf, "mode: %s", m_modeStr[mode].c_str());
+            sprintf(buf, "Mode: %s", m_modeStr[mode].c_str());
             ::TextOut(hDC, 0, y, buf, (int)strlen(buf));
 
             y += tm.tmHeight;
             buf[0] = 0;
-            sprintf(buf, m_demo_processing ? "blur frame" : "copy frame");
-            ::TextOut(hDC, 0, y, buf, (int)strlen(buf));
-
-            y += tm.tmHeight;
-            buf[0] = 0;
-            sprintf(buf, "time: %4.1f msec", time);
+            sprintf(buf, "FPS: %2.1f", fps);
             ::TextOut(hDC, 0, y, buf, (int)strlen(buf));
 
             y += tm.tmHeight;

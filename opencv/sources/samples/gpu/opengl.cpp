@@ -1,4 +1,13 @@
 #include <iostream>
+#include "cvconfig.h"
+
+#ifndef HAVE_OPENGL
+int main()
+{
+    std::cerr << "Library was built without OpenGL support" << std::endl;
+    return -1;
+}
+#else
 
 #ifdef WIN32
     #define WIN32_LEAN_AND_MEAN 1
@@ -115,3 +124,5 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+#endif

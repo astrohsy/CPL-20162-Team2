@@ -71,17 +71,12 @@ namespace {
 }
 
 int main(int ac, char** av) {
-    cv::CommandLineParser parser(ac, av, "{help h||}{@input||}");
-    if (parser.has("help"))
-    {
-        help(av);
-        return 0;
-    }
-    std::string arg = parser.get<std::string>("@input");
-    if (arg.empty()) {
+
+    if (ac != 2) {
         help(av);
         return 1;
     }
+    std::string arg = av[1];
     VideoCapture capture(arg); //try to open string, this will attempt to open it as a video file or image sequence
     if (!capture.isOpened()) //if this fails, try to open as a video camera, through the use of an integer param
         capture.open(atoi(arg.c_str()));

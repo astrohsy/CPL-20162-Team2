@@ -16,21 +16,8 @@ static void help()
 
 int main(int argc, char** argv)
 {
-    cv::CommandLineParser parser(argc, argv,
-        "{help h ||}{@image|../data/board.jpg|}"
-    );
-    if (parser.has("help"))
-    {
-        help();
-        return 0;
-    }
-    string filename = parser.get<string>("@image");
-    if (filename.empty())
-    {
-        help();
-        cout << "no image_name provided" << endl;
-        return -1;
-    }
+    const char* filename = argc >= 2 ? argv[1] : "../data/board.jpg";
+
     Mat img = imread(filename, 0);
     if(img.empty())
     {

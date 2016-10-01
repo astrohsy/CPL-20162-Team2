@@ -110,7 +110,6 @@ Rect PlaneWarper::buildMaps(Size src_size, InputArray K, InputArray R, InputArra
     _xmap.create(dsize, CV_32FC1);
     _ymap.create(dsize, CV_32FC1);
 
-#ifdef HAVE_OPENCL
     if (ocl::useOpenCL())
     {
         ocl::Kernel k("buildWarpPlaneMaps", ocl::stitching::warpers_oclsrc);
@@ -125,7 +124,7 @@ Rect PlaneWarper::buildMaps(Size src_size, InputArray K, InputArray R, InputArra
                    ocl::KernelArg::PtrReadOnly(uk_rinv), ocl::KernelArg::PtrReadOnly(ut),
                    dst_tl.x, dst_tl.y, 1/projector_.scale, rowsPerWI);
 
-            size_t globalsize[2] = { (size_t)dsize.width, ((size_t)dsize.height + rowsPerWI - 1) / rowsPerWI };
+            size_t globalsize[2] = { dsize.width, (dsize.height + rowsPerWI - 1) / rowsPerWI };
             if (k.run(2, globalsize, NULL, true))
             {
                 CV_IMPL_ADD(CV_IMPL_OCL);
@@ -133,7 +132,6 @@ Rect PlaneWarper::buildMaps(Size src_size, InputArray K, InputArray R, InputArra
             }
         }
     }
-#endif
 
     Mat xmap = _xmap.getMat(), ymap = _ymap.getMat();
 
@@ -312,7 +310,6 @@ void SphericalPortraitWarper::detectResultRoi(Size src_size, Point &dst_tl, Poin
 
 Rect SphericalWarper::buildMaps(Size src_size, InputArray K, InputArray R, OutputArray xmap, OutputArray ymap)
 {
-#ifdef HAVE_OPENCL
     if (ocl::useOpenCL())
     {
         ocl::Kernel k("buildWarpSphericalMaps", ocl::stitching::warpers_oclsrc);
@@ -334,7 +331,7 @@ Rect SphericalWarper::buildMaps(Size src_size, InputArray K, InputArray R, Outpu
             k.args(ocl::KernelArg::WriteOnlyNoSize(uxmap), ocl::KernelArg::WriteOnly(uymap),
                    ocl::KernelArg::PtrReadOnly(uk_rinv), dst_tl.x, dst_tl.y, 1/projector_.scale, rowsPerWI);
 
-            size_t globalsize[2] = { (size_t)dsize.width, ((size_t)dsize.height + rowsPerWI - 1) / rowsPerWI };
+            size_t globalsize[2] = { dsize.width, (dsize.height + rowsPerWI - 1) / rowsPerWI };
             if (k.run(2, globalsize, NULL, true))
             {
                 CV_IMPL_ADD(CV_IMPL_OCL);
@@ -342,7 +339,7 @@ Rect SphericalWarper::buildMaps(Size src_size, InputArray K, InputArray R, Outpu
             }
         }
     }
-#endif
+
     return RotationWarperBase<SphericalProjector>::buildMaps(src_size, K, R, xmap, ymap);
 }
 
@@ -361,7 +358,6 @@ Point SphericalWarper::warp(InputArray src, InputArray K, InputArray R, int inte
 
 Rect CylindricalWarper::buildMaps(Size src_size, InputArray K, InputArray R, OutputArray xmap, OutputArray ymap)
 {
-#ifdef HAVE_OPENCL
     if (ocl::useOpenCL())
     {
         ocl::Kernel k("buildWarpCylindricalMaps", ocl::stitching::warpers_oclsrc);
@@ -384,7 +380,7 @@ Rect CylindricalWarper::buildMaps(Size src_size, InputArray K, InputArray R, Out
                    ocl::KernelArg::PtrReadOnly(uk_rinv), dst_tl.x, dst_tl.y, 1/projector_.scale,
                    rowsPerWI);
 
-            size_t globalsize[2] = { (size_t)dsize.width, ((size_t)dsize.height + rowsPerWI - 1) / rowsPerWI };
+            size_t globalsize[2] = { dsize.width, (dsize.height + rowsPerWI - 1) / rowsPerWI };
             if (k.run(2, globalsize, NULL, true))
             {
                 CV_IMPL_ADD(CV_IMPL_OCL);
@@ -392,7 +388,7 @@ Rect CylindricalWarper::buildMaps(Size src_size, InputArray K, InputArray R, Out
             }
         }
     }
-#endif
+
     return RotationWarperBase<CylindricalProjector>::buildMaps(src_size, K, R, xmap, ymap);
 }
 
