@@ -135,12 +135,18 @@
     <ClInclude Include="..\..\..\opencv\build\include\opencv2\highgui\highgui.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="EvfAfMode.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CameraControl.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EvfAFMode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

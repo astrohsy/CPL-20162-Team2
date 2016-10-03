@@ -5,6 +5,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
+#include <Windows.h>
+
 
 #include "EDSDK.h"
 #include "EDSDKTypes.h"
@@ -18,24 +20,45 @@ using namespace std;
 using namespace cv;
 
 bool threadExit;
+CCameraControlApp theApp;
 
 bool printingPicture(){
-	//namedWindow("Display window", 1);
+	namedWindow("DSLR", 1);
 
+	//IplImage* dslr = 0;
+
+	BITMAP Evf_Bmp;
+	int LVBw, LVBh, w, h;
+	float LVBratio, LVration;
+
+	(*theApp._controller).actionPerformed(*new ActionEvent("evfAFOn"));
+	
+	//CvCapture* capture = cvCaptureFromCAM(0);
 
 	while (1){
 		if (threadExit)
 			break;
 
+		/*cvGrabFrame(capture);
+		dslr = cvRetrieveFrame(capture);
 
+		if (!dslr)
+			break;
+
+		cvShowImage("DSLR", dslr);
+
+		char c = cvWaitKey(33);
+		if (c == 0x1b) break;*/
 	}
+
+	//cvReleaseCapture(&capture);
+	cvDestroyAllWindows();
 
 	return true;
 }
 
 int main()
 {
-	CCameraControlApp theApp;
 	theApp.InitInstance();
 
 	string doing;

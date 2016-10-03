@@ -55,10 +55,12 @@
     <ClInclude Include="Command\SetPropertyCommand.h" />
     <ClInclude Include="Command\StartEvfCommand.h" />
     <ClInclude Include="Command\TakePictureCommand.h" />
+    <ClInclude Include="EvfAfMode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
+    <ClCompile Include="EvfAFMode.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD6386FF-DC4F-4D31-B7D2-F524B0E27EB9}</ProjectGuid>
@@ -133,8 +135,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>./../../EDSDK/Library;./../../../opencv\build\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>EDSDK.lib;opencv_world310.lib;opencv_world310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./../../EDSDK/Library;./../../../opencv\build\x86\vc12\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>EDSDK.lib;opencv_ts300.lib;opencv_ts300d.lib;opencv_world300.lib;opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
