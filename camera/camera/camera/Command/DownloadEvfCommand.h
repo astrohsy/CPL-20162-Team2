@@ -40,7 +40,6 @@ public:
     // Execute command	
 	virtual bool execute()
 	{
-	
 		EdsError err = EDS_ERR_OK;
 
 		EdsEvfImageRef evfImage = NULL;

@@ -19,11 +19,11 @@
     <Filter Include="헤더 파일\Class">
       <UniqueIdentifier>{a31d9677-a3e2-41ac-9fde-18f770dab0d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\Command">
-      <UniqueIdentifier>{ae916bf8-e311-4d98-8809-226f52704a8b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="헤더 파일\EDSDK">
       <UniqueIdentifier>{8c3bd8c9-9982-4356-81c5-38f31f6f551b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Command">
+      <UniqueIdentifier>{ae916bf8-e311-4d98-8809-226f52704a8b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,18 +135,12 @@
     <ClInclude Include="..\..\..\opencv\build\include\opencv2\highgui\highgui.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="EvfAfMode.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CameraControl.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="EvfAFMode.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

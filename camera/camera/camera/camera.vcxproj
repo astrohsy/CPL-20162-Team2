@@ -55,12 +55,10 @@
     <ClInclude Include="Command\SetPropertyCommand.h" />
     <ClInclude Include="Command\StartEvfCommand.h" />
     <ClInclude Include="Command\TakePictureCommand.h" />
-    <ClInclude Include="EvfAfMode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CameraControl.cpp" />
-    <ClCompile Include="EvfAFMode.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD6386FF-DC4F-4D31-B7D2-F524B0E27EB9}</ProjectGuid>
