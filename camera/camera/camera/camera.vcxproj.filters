@@ -13,17 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="헤더 파일\Camera">
-      <UniqueIdentifier>{fb5c0087-3b45-4f07-982c-39e8055d58cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\Class">
-      <UniqueIdentifier>{a31d9677-a3e2-41ac-9fde-18f770dab0d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="헤더 파일\EDSDK">
       <UniqueIdentifier>{8c3bd8c9-9982-4356-81c5-38f31f6f551b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\Command">
-      <UniqueIdentifier>{ae916bf8-e311-4d98-8809-226f52704a8b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,111 +27,9 @@
     <ClInclude Include="..\..\EDSDK\Header\EDSDKTypes.h">
       <Filter>헤더 파일\EDSDK</Filter>
     </ClInclude>
-    <ClInclude Include="Command\CloseSessionCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\Command.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\DoEvfAFCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\DownloadCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\DownloadEvfCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\DriveLensCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\EndEvfCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\GetPropertyCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\GetPropertyDescCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\NotifyCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\OpenSessionCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\PressShutterButtonCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\SaveSettingCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\SetCapacityCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\SetPropertyCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\StartEvfCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Command\TakePictureCommand.h">
-      <Filter>헤더 파일\Command</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\ActionEvent.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\ActionListener.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\ActionSource.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\Observer.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\Synchronized.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Class\Thread.h">
-      <Filter>헤더 파일\Class</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraController.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraEvent.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraEventListener.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraModel.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraModelLegacy.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\Processor.h">
-      <Filter>헤더 파일\Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraControl.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\opencv.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\core\core.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\highgui\highgui.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraControl.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "callibration.h"
+#include "calibration.h"
 
 int main()
 {
@@ -20,5 +20,5 @@ int main()
 	cout << "w=" << board_w << " h=" << board_h << " n=" << n_boards << " " << measure << "mm" << endl;
 	cout << "-----------FindChessboardCorner------------" << endl;
 	
-	callibration(board_w, board_h, n_boards, measure);
+	calibration(board_w, board_h, n_boards, measure);
 }

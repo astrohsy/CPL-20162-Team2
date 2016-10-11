@@ -15,18 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="calibration.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="test_calibration.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="callibration.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="test.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="callibration.h">
+    <ClInclude Include="calibration.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,46 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\core\core.hpp" />
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\highgui\highgui.hpp" />
-    <ClInclude Include="..\..\..\opencv\build\include\opencv2\opencv.hpp" />
     <ClInclude Include="..\..\EDSDK\Header\EDSDK.h" />
     <ClInclude Include="..\..\EDSDK\Header\EDSDKErrors.h" />
     <ClInclude Include="..\..\EDSDK\Header\EDSDKTypes.h" />
-    <ClInclude Include="CameraControl.h" />
-    <ClInclude Include="Camera\CameraController.h" />
-    <ClInclude Include="Camera\CameraEvent.h" />
-    <ClInclude Include="Camera\CameraEventListener.h" />
-    <ClInclude Include="Camera\CameraModel.h" />
-    <ClInclude Include="Camera\CameraModelLegacy.h" />
-    <ClInclude Include="Camera\Processor.h" />
-    <ClInclude Include="Class\ActionEvent.h" />
-    <ClInclude Include="Class\ActionListener.h" />
-    <ClInclude Include="Class\ActionSource.h" />
-    <ClInclude Include="Class\Observer.h" />
-    <ClInclude Include="Class\Synchronized.h" />
-    <ClInclude Include="Class\Thread.h" />
-    <ClInclude Include="Command\CloseSessionCommand.h" />
-    <ClInclude Include="Command\Command.h" />
-    <ClInclude Include="Command\DoEvfAFCommand.h" />
-    <ClInclude Include="Command\DownloadCommand.h" />
-    <ClInclude Include="Command\DownloadEvfCommand.h" />
-    <ClInclude Include="Command\DriveLensCommand.h" />
-    <ClInclude Include="Command\EndEvfCommand.h" />
-    <ClInclude Include="Command\GetPropertyCommand.h" />
-    <ClInclude Include="Command\GetPropertyDescCommand.h" />
-    <ClInclude Include="Command\NotifyCommand.h" />
-    <ClInclude Include="Command\OpenSessionCommand.h" />
-    <ClInclude Include="Command\PressShutterButtonCommand.h" />
-    <ClInclude Include="Command\SaveSettingCommand.h" />
-    <ClInclude Include="Command\SetCapacityCommand.h" />
-    <ClInclude Include="Command\SetPropertyCommand.h" />
-    <ClInclude Include="Command\StartEvfCommand.h" />
-    <ClInclude Include="Command\TakePictureCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="CameraControl.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD6386FF-DC4F-4D31-B7D2-F524B0E27EB9}</ProjectGuid>
