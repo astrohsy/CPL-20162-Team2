@@ -1,38 +1,52 @@
 #include "camera.h"
 
-#include <iostream>
 #include <thread>
 #include <future>
 #include <string>
 
-bool evfValue;
+bool programExit;
+bool takingPicture;
 
-bool evf(Camera dslr){
-	
-
-	return 1;
-}
+bool inputDoing();
+void evf(Camera dslr);
 
 int main()
 {
-	string doing;
 	namedWindow("main", WINDOW_AUTOSIZE);
 	Camera dslr;
-	evfValue = false;
+	programExit = false;
+	takingPicture = false;
 
 	// Initialize SDK
 	dslr.initializeSDK();
 
-	thread evfThread(evf, dslr);
+	thread doingThread(inputDoing);
+	evf(dslr);
+	
+	doingThread.join();
+	dslr.releaseSDK();
 
-	/*while (1){
+	return 0;
+}
+
+bool inputDoing(){
+	string doing;
+
+	while (1){
 		cin >> doing;
 		if (doing == "z"){
-			evfValue = true;
+			programExit = true;
 			break;
 		}
-	}*/
+		if (doing == "t"){
+			takingPicture = true;
+		}
+	}
 
+	return 1;
+}
+
+void evf(Camera dslr){
 	dslr.setErr(dslr.startLiveview());
 	if (dslr.isOK())
 	{
@@ -43,10 +57,13 @@ int main()
 	while (1){
 		dslr.downloadEvfData();
 		int c = cvWaitKey(10);
-		if (c == 32)
-			break;
 
-		if (evfValue)
+		if (takingPicture){
+			takingPicture = false;
+			dslr.takePicture();
+		}
+
+		if (programExit)
 			break;
 	}
 	//
@@ -56,8 +73,4 @@ int main()
 	{
 		cout << "end live view" << endl;
 	}
-
-	evfThread.join();
-
-	return 0;
 }

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "EDSDK.h"
 #include "EDSDKErrors.h"
 #include "EDSDKTypes.h"
@@ -37,6 +39,9 @@ public:
 	EdsError endLiveview();
 	EdsError downloadEvfData();
 
+	void takePicture();
+
 	void initializeSDK();
 	bool isOK();
+	void releaseSDK();
 };

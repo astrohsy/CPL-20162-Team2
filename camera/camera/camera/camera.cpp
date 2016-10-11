@@ -188,18 +188,38 @@ void Camera::initializeSDK()
 	if (err == EDS_ERR_OK)
 	{
 		isSDKLoaded = true; // isSDKLoaded is true if initialised
-		printf("SDK initialised \n");
+		cout << "SDK initialised" << endl;
 	}
 	if (err == EDS_ERR_OK)
 	{
 		err = getFirstCamera();
 		if (err == EDS_ERR_OK)
-			printf("getFirstCamera ok \n");
+			cout << "getFirstCamera ok" << endl;
 	}
 	if (err == EDS_ERR_OK)
 	{
 		err = EdsOpenSession(camera);
 		if (err == EDS_ERR_OK)
-			printf("session open \n");
+			cout << "session open" << endl;
 	}
+}
+
+void Camera::releaseSDK()
+{
+	EdsCloseSession(camera);
+	EdsTerminateSDK();
+}
+
+void Camera::takePicture()
+{
+	EdsInt32 saveTarget = kEdsSaveTo_Host;
+	err = EdsSetPropertyData(camera, kEdsPropID_SaveTo, 0, 4, &saveTarget);
+	EdsCapacity newCapacity = { 0x7FFFFFFF, 0x1000, 1 };
+	err = EdsSetCapacity(camera, newCapacity);
+
+	string str_path = "./Img.jpg";
+	const char* ch_dest = str_path.c_str();
+	EdsCreateFileStream(ch_dest, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_ReadWrite, 0);
+
+	EdsSendCommand(camera, kEdsCameraCommand_TakePicture, 0);
 }
