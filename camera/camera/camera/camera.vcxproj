@@ -22,9 +22,11 @@
     <ClInclude Include="..\..\EDSDK\Header\EDSDK.h" />
     <ClInclude Include="..\..\EDSDK\Header\EDSDKErrors.h" />
     <ClInclude Include="..\..\EDSDK\Header\EDSDKTypes.h" />
+    <ClInclude Include="camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD6386FF-DC4F-4D31-B7D2-F524B0E27EB9}</ProjectGuid>

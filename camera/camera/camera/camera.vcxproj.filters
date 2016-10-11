@@ -27,8 +27,14 @@
     <ClInclude Include="..\..\EDSDK\Header\EDSDKTypes.h">
       <Filter>헤더 파일\EDSDK</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>

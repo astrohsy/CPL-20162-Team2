@@ -1,18 +1,64 @@
-#include <stdio.h>
+#include "camera.h"
 
-#include "EDSDK.h"
-#include "EDSDKErrors.h"
-#include "EDSDKTypes.h"
+Camera::Camera(){
+	err = EDS_ERR_OK;
+	camera = NULL;
+	cameraList = NULL;
+	count = 0;
+	isSDKLoaded = false;
+}
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
-#include <opencv2/opencv.hpp>
+void Camera::setErr(EdsError err)
+{
+	Camera::err = err;
+}
 
-using namespace cv;
-using namespace std;
+EdsError Camera::getErr()
+{
+	return err;
+}
 
-EdsError getFirstCamera(EdsCameraRef *camera)
+void Camera::setCamera(EdsCameraRef camera)
+{
+	Camera::camera = camera;
+}
+
+EdsCameraRef Camera::getCamera()
+{
+	return camera;
+}
+
+void Camera::setCameraList(EdsCameraListRef cameraList)
+{
+	Camera::cameraList = cameraList;
+}
+
+EdsCameraListRef Camera::getCameraList()
+{
+	return cameraList;
+}
+
+void Camera::setCount(EdsUInt32 count)
+{
+	Camera::count = count;
+}
+
+EdsUInt32 Camera::getCount()
+{
+	return count;
+}
+
+void Camera::setIsSDKLoaded(bool isSDKLoaded)
+{
+	Camera::isSDKLoaded = isSDKLoaded;
+}
+
+bool Camera::getIsSDKLoaded()
+{
+	return isSDKLoaded;
+}
+
+EdsError Camera::getFirstCamera()
 {
 	EdsError err = EDS_ERR_OK;
 	EdsCameraListRef cameraList = NULL;
@@ -32,7 +78,7 @@ EdsError getFirstCamera(EdsCameraRef *camera)
 	// Get first camera retrieved
 	if (err == EDS_ERR_OK)
 	{
-		err = EdsGetChildAtIndex(cameraList, 0, camera);
+		err = EdsGetChildAtIndex(cameraList, 0, &camera);
 	}
 	// Release camera list
 	if (cameraList != NULL)
@@ -43,7 +89,7 @@ EdsError getFirstCamera(EdsCameraRef *camera)
 	return err;
 }
 
-EdsError startLiveview(EdsCameraRef camera)
+EdsError Camera::startLiveview()
 {
 	EdsError err = EDS_ERR_OK;
 
@@ -59,7 +105,7 @@ EdsError startLiveview(EdsCameraRef camera)
 
 }
 
-EdsError endLiveview(EdsCameraRef camera)
+EdsError Camera::endLiveview()
 {
 	EdsError err = EDS_ERR_OK;
 	// Get the output device for the live view image
@@ -74,7 +120,7 @@ EdsError endLiveview(EdsCameraRef camera)
 	return err;
 }
 
-EdsError downloadEvfData(EdsCameraRef camera)
+EdsError Camera::downloadEvfData()
 {
 
 	EdsError err = EDS_ERR_OK;
@@ -83,7 +129,6 @@ EdsError downloadEvfData(EdsCameraRef camera)
 	EdsSize coords;
 	EdsUInt64 size = 0;
 	unsigned char *data = NULL;
-
 	// Create memory stream.
 	err = EdsCreateMemoryStream(0, &stream);
 	// Create EvfImageRef.
@@ -101,7 +146,10 @@ EdsError downloadEvfData(EdsCameraRef camera)
 	{
 		EdsGetPropertyData(evfImage, kEdsPropID_Evf_CoordinateSystem, 0, sizeof(coords), &coords);
 		EdsGetPointer(stream, (EdsVoid**)&data);
+
 	}
+
+	// Display image
 	if (data != NULL)
 	{
 		EdsGetLength(stream, &size);
@@ -109,12 +157,8 @@ EdsError downloadEvfData(EdsCameraRef camera)
 		Mat img = Mat(coords.height, coords.width, CV_8UC3, data);
 		image = imdecode(img, CV_LOAD_IMAGE_COLOR);
 		imshow("main", image);
-
 	}
-	//
-	// Display image
 
-	//
 	// Release stream
 	if (stream != NULL)
 	{
@@ -130,17 +174,16 @@ EdsError downloadEvfData(EdsCameraRef camera)
 	return err;
 }
 
-int main()
+bool Camera::isOK()
 {
-	int c;
-	bool show = true;
-	namedWindow("main", WINDOW_AUTOSIZE);
-	EdsError err = EDS_ERR_OK;
-	EdsCameraRef camera = NULL;
-	EdsCameraListRef cameraList = NULL;
-	EdsUInt32 count = 0;
-	bool isSDKLoaded = false;
-	// Initialize SDK
+	if (getErr() == EDS_ERR_OK)
+		return true;
+	else
+		return false;
+}
+
+void Camera::initializeSDK()
+{
 	err = EdsInitializeSDK(); // If camera is initialised, err = EDS_ERR_OK
 	if (err == EDS_ERR_OK)
 	{
@@ -149,7 +192,7 @@ int main()
 	}
 	if (err == EDS_ERR_OK)
 	{
-		err = getFirstCamera(&camera);
+		err = getFirstCamera();
 		if (err == EDS_ERR_OK)
 			printf("getFirstCamera ok \n");
 	}
@@ -159,26 +202,4 @@ int main()
 		if (err == EDS_ERR_OK)
 			printf("session open \n");
 	}
-	err = startLiveview(camera);
-	if (err == EDS_ERR_OK)
-	{
-		printf("start live view \n");
-	}
-	// live view
-	for (;;)
-	{
-		downloadEvfData(camera);
-		c = cvWaitKey(10);
-		if (c == 32)
-		{
-			break;
-		}
-	}
-	//
-	err = endLiveview(camera);
-	if (err == EDS_ERR_OK)
-	{
-		printf("end live view \n");
-	}
-	return 0;
 }
