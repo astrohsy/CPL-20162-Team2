@@ -1,6 +1,6 @@
 /*	MeshGenerator
 작성 : 20160924 07:56 김미수
-수정 : 20161024 03:35 김미수
+수정 : 20161024 20:07 김미수
 */
 #pragma once
 #pragma warning(disable:4996)
@@ -23,17 +23,9 @@ using namespace cv;
 
 typedef struct
 {
-	float x;
-	float y;
-	float z;
+	bool isThere;
+	int vtrNum;
 } Vertice;
-
-typedef struct
-{
-	int v1;
-	int v2;
-	int v3;
-} Triangle;
 
 // PXCImage -> Mat로 변환하는 함수
 void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
@@ -110,6 +102,9 @@ void mat2Ply(Mat image)
 	string content = "";
 	char temp[100];
 
+	Vertice vtrArr[240][320];
+	memset(vtrArr, 0, sizeof(Vertice) * 320 * 240);
+
 	//Triangle triArr[4 * 320 * 240];
 
 	for (y = 0; y < image.rows; y++)
@@ -117,25 +112,69 @@ void mat2Ply(Mat image)
 		for (x = 0; x < image.cols; x++)
 		{
 			z = image.at<unsigned short>(y, x);
-			if (z > 0)
+			if (z > 0 && z < USHRT_MAX/10)
 			{
-				sprintf(temp, "%f %f %f\n", (float)x/320, (float)y/240, (float)z/USHRT_MAX*10);
+				sprintf(temp, "%f %f %f\n", (float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 60);
 				content += temp;
+				vtrArr[y][x].isThere = true;
+				vtrArr[y][x].vtrNum = vtrAmount;
 				vtrAmount++;
 			}
 		}
 	}
 
 	// 테스트용 코드
-	content += "3 0 1 2\n";
+	/*content += "3 0 1 2\n";
 	triAmount++;
 	content += "3 100 1 2\n";
 	triAmount++;
 	content += "3 0 100 2\n";
 	triAmount++;
 	content += "3 0 1 200\n";
-	triAmount++;
+	triAmount++;*/
 	//
+
+	//  face 생성
+	for (y = 0; y < image.rows; y++)
+	{
+		for (x = 0; x < image.cols - 1; x++)
+		{
+			bool firstTry = false;
+			if (y < image.rows - 1)
+			{
+				if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x].isThere == true)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y + 1][x].vtrNum);
+					content += temp;
+					firstTry = true;
+					triAmount++;
+				}
+				if (vtrArr[y+1][x].isThere == true && vtrArr[y+1][x + 1].isThere == true && vtrArr[y][x + 1].isThere == true)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y+1][x].vtrNum, vtrArr[y+1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
+					content += temp;
+					firstTry = true;
+					triAmount++;
+				}
+
+				if (firstTry == false)
+				{
+					if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x + 1].isThere == true)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y + 1][x + 1].vtrNum);
+						content += temp;
+						triAmount++;
+					}
+					if (vtrArr[y+1][x].isThere == true && vtrArr[y+1][x + 1].isThere == true && vtrArr[y][x].isThere == true)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y+1][x].vtrNum, vtrArr[y+1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+						content += temp;
+						triAmount++;
+					}
+				}
+			}
+		}
+	}
 
 	// 헤더 선언
 	header += "format ascii 1.0\n";
@@ -148,7 +187,7 @@ void mat2Ply(Mat image)
 	header += temp;
 	header += "property list uchar int vertex_indices\n";
 	header += "end_header\n";
-	
+
 	cout << header;
 
 	// ply로 출력하는 부분
