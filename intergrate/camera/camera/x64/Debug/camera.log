@@ -1,0 +1,38 @@
+﻿빌드 시작: 2016-09-28 오전 4:34:40
+     1>2 노드의 "C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\camera\camera.vcxproj" 프로젝트(Build 대상)입니다.
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\x64\Debug\camera.exe" /INCREMENTAL /NOLOGO /LIBPATH:./../../EDSDK/Library /LIBPATH:./../../../opencv\build\x64\vc12\lib EDSDK.lib opencv_world310.lib opencv_world310d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\x64\Debug\camera.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\x64\Debug\camera.lib" /MACHINE:X64 x64\Debug\camera.obj
+         x64\Debug\CameraControl.obj
+     1>CameraControl.obj : error LNK2019: __imp_EdsInitializeSDK 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsTerminateSDK 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::release(void)" (?release@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsRelease 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetChildCount 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetChildAtIndex 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetPropertySize 외부 기호(참조 위치: "private: unsigned long __cdecl GetPropertyCommand::getProperty(unsigned long)" (?getProperty@GetPropertyCommand@@AEAAKK@Z) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetPropertyData 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadEvfCommand::execute(void)" (?execute@DownloadEvfCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetPropertyData 외부 기호(참조 위치: "public: virtual bool __cdecl SetPropertyCommand<unsigned long>::execute(void)" (?execute@?$SetPropertyCommand@K@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetPropertyDesc 외부 기호(참조 위치: "private: unsigned long __cdecl GetPropertyDescCommand::getPropertyDesc(unsigned long)" (?getPropertyDesc@GetPropertyDescCommand@@AEAAKK@Z) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetCameraList 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetDeviceInfo 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsOpenSession 외부 기호(참조 위치: "public: virtual bool __cdecl OpenSessionCommand::execute(void)" (?execute@OpenSessionCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsCloseSession 외부 기호(참조 위치: "public: virtual bool __cdecl CloseSessionCommand::execute(void)" (?execute@CloseSessionCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSendCommand 외부 기호(참조 위치: "public: virtual bool __cdecl DoEvfAFCommand::execute(void)" (?execute@DoEvfAFCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSendStatusCommand 외부 기호(참조 위치: "public: virtual bool __cdecl GetPropertyDescCommand::execute(void)" (?execute@GetPropertyDescCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetCapacity 외부 기호(참조 위치: "public: virtual bool __cdecl OpenSessionCommand::execute(void)" (?execute@OpenSessionCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsGetDirectoryItemInfo 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadCommand::execute(void)" (?execute@DownloadCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsDownload 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadCommand::execute(void)" (?execute@DownloadCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsDownloadComplete 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadCommand::execute(void)" (?execute@DownloadCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsCreateFileStream 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadCommand::execute(void)" (?execute@DownloadCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsCreateMemoryStream 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadEvfCommand::execute(void)" (?execute@DownloadEvfCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetProgressCallback 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadCommand::execute(void)" (?execute@DownloadCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsCreateEvfImageRef 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadEvfCommand::execute(void)" (?execute@DownloadEvfCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsDownloadEvfImage 외부 기호(참조 위치: "public: virtual bool __cdecl DownloadEvfCommand::execute(void)" (?execute@DownloadEvfCommand@@UEAA_NXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetPropertyEventHandler 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetObjectEventHandler 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>CameraControl.obj : error LNK2019: __imp_EdsSetCameraStateEventHandler 외부 기호(참조 위치: "public: virtual int __cdecl CCameraControlApp::InitInstance(void)" (?InitInstance@CCameraControlApp@@UEAAHXZ) 함수)에서 확인하지 못했습니다.
+     1>C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\x64\Debug\camera.exe : fatal error LNK1120: 27개의 확인할 수 없는 외부 참조입니다.
+     1>"C:\Users\kshy9\CPL\CPL-20162-Team2\camera\camera\camera\camera.vcxproj" 프로젝트를 빌드했습니다(Build 대상). - 실패
+
+빌드하지 못했습니다.
+
+경과 시간: 00:00:00.53
