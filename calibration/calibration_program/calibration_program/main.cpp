@@ -22,5 +22,10 @@ void main()
 	cout << "What is destination picture name?" << endl;
 	cin >> dst_name;
 
-	calibration(board_w, board_h, measure, src_name, dst_name);
+	Mat H = calibration(board_w, board_h, measure, src_name, dst_name);
+	Mat result = changePicture(src_name, dst_name, H);
+
+	imshow("result", result);
+	imwrite("result.bmp", result);
+	system("pause");
 }

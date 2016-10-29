@@ -10,6 +10,5 @@
 using namespace std;
 using namespace cv;
 
-const int MAXSTR = 100;
-
-void calibration(int board_w, int board_h, float measure, string src_name, string dst_name);
+Mat calibration(int board_w, int board_h, float measure, string src_name, string dst_name);
+Mat changePicture(string src_name, string dst_name, Mat H);
