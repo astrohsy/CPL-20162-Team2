@@ -17,6 +17,8 @@
 #include <opencv2\highgui\highgui.hpp>
 
 #define MAX_FRAMES 10200
+#define DEPTH_WIDTH 480
+#define DEPTH_HEIGHT 360
 
 using namespace std;
 using namespace cv;
@@ -114,7 +116,7 @@ void mat2Ply(Mat image)
 			z = image.at<unsigned short>(y, x);
 			if (z > 0 && z < USHRT_MAX/10)
 			{
-				sprintf(temp, "%f %f %f\n", (float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 90);
+				sprintf(temp, "%f %f %f\n", (float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 120);
 				content += temp;
 				vtrArr[y][x].isThere = true;
 				vtrArr[y][x].vtrNum = vtrAmount;
@@ -225,7 +227,7 @@ int main(void)
 
 	// STREAM 옵션에 따라서 되기도 하고 안되기도 함.
 	// 현재 설정은 무리없이 되는 듯.
-	sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480, 30/*, PXCCapture::Device::STREAM_OPTION_UNRECTIFIED*/);
+	sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 1920, 1080, 30/*, PXCCapture::Device::STREAM_OPTION_UNRECTIFIED*/);
 	sm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, 320, 240, 30);
 
 	if (sm->Init() != PXC_STATUS_NO_ERROR)
