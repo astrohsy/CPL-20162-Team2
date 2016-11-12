@@ -18,8 +18,11 @@
 #include <future>
 #include <string>
 /////////////////////// rgb sensor
-
-#define MAX_FRAMES 10200
+#define DEPTH_WIDTH 480
+#define DEPTH_HEIGHT 360
+#define RGB_WIDTH 1920
+#define RGB_HEIGHT 1080
+#define FRAME_RATE 30
 
 using namespace std;
 using namespace cv;
@@ -179,7 +182,8 @@ void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
 	inImg->ReleaseAccess(&data);
 }
 // Realsense 카메라에서 받은 뎁스 영상(mat)를 PLY로 변환(메쉬 생성)
-// 인풋은 320*240, cvDataType = CV_16U; cvDataWidth = 2; 임.
+// Realsense 카메라에서 받은 뎁스 영상(mat)를 PLY로 변환(메쉬 생성)
+// 인풋은 480*360, cvDataType = CV_16U; cvDataWidth = 2; 임.
 void mat2Ply(Mat image)
 {
 	int x = 0, y = 0;
@@ -190,20 +194,22 @@ void mat2Ply(Mat image)
 	string header = "ply\n";
 	string content = "";
 	char temp[100];
+	char textureFile[50] = "rgb.bmp";
 
-	Vertice vtrArr[240][320];
-	memset(vtrArr, 0, sizeof(Vertice)* 320 * 240);
-
-	//Triangle triArr[4 * 320 * 240];
+	Vertice vtrArr[DEPTH_HEIGHT][DEPTH_WIDTH];
+	memset(vtrArr, 0, sizeof(Vertice) * DEPTH_WIDTH * DEPTH_HEIGHT);
 
 	for (y = 0; y < image.rows; y++)
 	{
 		for (x = 0; x < image.cols; x++)
 		{
 			z = image.at<unsigned short>(y, x);
-			if (z > 0 && z < USHRT_MAX / 10)
+			if (z > 0 && z < USHRT_MAX / 80)
 			{
-				sprintf(temp, "%f %f %f\n", (float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 90);
+				// 텍스쳐 위치 관련은 여기서. u--일수록 텍스쳐가 오른쪽(열었을 때)으로 밀림. 
+				// Texture coordinate가 아주 정확한 건 아님. 마음에 안 들면 4, 5번째 %f를 변경하길 바람.
+				sprintf(temp, "%f %f %f %f %f\n",
+					(float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 180, 0.04828 + ((float)(x + 1)) / DEPTH_WIDTH * 3 / 4, -0.0101 - ((float)(y + 1)) / DEPTH_HEIGHT);
 				content += temp;
 				vtrArr[y][x].isThere = true;
 				vtrArr[y][x].vtrNum = vtrAmount;
@@ -212,54 +218,41 @@ void mat2Ply(Mat image)
 		}
 	}
 
-	// 테스트용 코드
-	/*content += "3 0 1 2\n";
-	triAmount++;
-	content += "3 100 1 2\n";
-	triAmount++;
-	content += "3 0 100 2\n";
-	triAmount++;
-	content += "3 0 1 200\n";
-	triAmount++;*/
-	//
-
 	//  face 생성
-	for (y = 0; y < image.rows; y++)
+	for (y = 0; y < image.rows - 1; y++)
 	{
 		for (x = 0; x < image.cols - 1; x++)
 		{
 			bool firstTry = false;
-			if (y < image.rows - 1)
-			{
-				if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x].isThere == true)
-				{
-					sprintf(temp, "3 %d %d %d\n", vtrArr[y][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y + 1][x].vtrNum);
-					content += temp;
-					firstTry = true;
-					triAmount++;
-				}
-				if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x + 1].isThere == true)
-				{
-					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
-					content += temp;
-					firstTry = true;
-					triAmount++;
-				}
 
-				if (firstTry == false)
+			if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x].isThere == true)
+			{
+				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+				content += temp;
+				firstTry = true;
+				triAmount++;
+			}
+			if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x + 1].isThere == true)
+			{
+				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
+				content += temp;
+				firstTry = true;
+				triAmount++;
+			}
+
+			if (firstTry == false)
+			{
+				if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x + 1].isThere == true)
 				{
-					if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x + 1].isThere == true)
-					{
-						sprintf(temp, "3 %d %d %d\n", vtrArr[y][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y + 1][x + 1].vtrNum);
-						content += temp;
-						triAmount++;
-					}
-					if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x].isThere == true)
-					{
-						sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
-						content += temp;
-						triAmount++;
-					}
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+					content += temp;
+					triAmount++;
+				}
+				if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x].isThere == true)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+					content += temp;
+					triAmount++;
 				}
 			}
 		}
@@ -267,11 +260,15 @@ void mat2Ply(Mat image)
 
 	// 헤더 선언
 	header += "format ascii 1.0\n";
+	sprintf(temp, "comment TextureFile %s\n", textureFile);
+	header += temp;
 	sprintf(temp, "element vertex %d\n", vtrAmount);
 	header += temp;
 	header += "property float x\n";
 	header += "property float y\n";
 	header += "property float z\n";
+	header += "property float texture_u\n";
+	header += "property float texture_v\n";
 	sprintf(temp, "element face %d\n", triAmount);
 	header += temp;
 	header += "property list uchar int vertex_indices\n";
@@ -287,6 +284,7 @@ void mat2Ply(Mat image)
 
 	fclose(fPtr);
 }
+
 int depth_main(void)
 {
 	Mat rgbMat;
@@ -311,10 +309,9 @@ int depth_main(void)
 		wprintf_s(L"Unable to create the PXCSenseManager\n");
 	}
 
-	// STREAM 옵션에 따라서 되기도 하고 안되기도 함.
-	// 현재 설정은 무리없이 되는 듯.
-	sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480, 30/*, PXCCapture::Device::STREAM_OPTION_UNRECTIFIED*/);
-	sm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, 320, 240, 30);
+	// STREAM 옵션 중요. 30프레임으로 돌리면 RGB는 1080p, Depth는 480*360까지 받을 수 있음
+	sm->EnableStream(PXCCapture::STREAM_TYPE_COLOR, RGB_WIDTH, RGB_HEIGHT, FRAME_RATE/*, PXCCapture::Device::STREAM_OPTION_UNRECTIFIED*/);
+	sm->EnableStream(PXCCapture::STREAM_TYPE_DEPTH, DEPTH_WIDTH, DEPTH_HEIGHT, FRAME_RATE);
 
 	if (sm->Init() != PXC_STATUS_NO_ERROR)
 	{

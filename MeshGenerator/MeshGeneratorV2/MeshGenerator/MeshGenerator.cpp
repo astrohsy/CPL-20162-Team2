@@ -108,7 +108,7 @@ void mat2Ply(Mat image)
 	string header = "ply\n";
 	string content = "";
 	char temp[100];
-	char textureFile[50] = "rgb.jpg";
+	char textureFile[50] = "rgb.bmp";
 
 	Vertice vtrArr[DEPTH_HEIGHT][DEPTH_WIDTH];
 	memset(vtrArr, 0, sizeof(Vertice) * DEPTH_WIDTH * DEPTH_HEIGHT);
@@ -131,8 +131,6 @@ void mat2Ply(Mat image)
 			}
 		}
 	}
-
-	// 테스트용 코드
 
 	//  face 생성
 	for (y = 0; y < image.rows - 1; y++)
@@ -265,7 +263,7 @@ int main(void)
 
 		if (doSave == true)
 		{
-			imwrite("rgb.jpg", rgbMat); //Scaling 안 해줬음 아직
+			imwrite("rgb.bmp", rgbMat); //Scaling 안 해줬음 아직
 			mat2Ply(depthMat);
 			cout << "Save Complete" << endl;
 			break;
