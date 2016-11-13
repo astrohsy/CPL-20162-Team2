@@ -19,11 +19,16 @@ github의 issue기능을 활용한다.
 | 이름        | 폴더           |
 | :-------------: |:-------------:|
 | 김동호      | /3d-printing |
+| 김미수      | /MeshGenerator |
+| 김동호      | /3d-printing |
+| 김성현      | /3application |
 | 김성현      | /calibration      |
 | 김성현      | /camera      |
-| 김미수      | /meshing         |
+| 김동호      | /intergrate |
 | 이호승      | /intergrated-sw     |
+| 이호승      | /문서     |
 | 공통      | /     |
+
 
 # ScanYou Team 규칙
 
