@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.maxst.ar.unityWrapper">
+    package="com.maxst.ar.kshy9598.ARTEST">
 
     <uses-sdk
         android:minSdkVersion="15"
