@@ -1,4 +1,11 @@
 #include "calibration.h"
+#include <fstream>
+
+const int w = 8;
+const int h = 5;
+const float mm = 3.5;
+const string src = "rgb.bmp";
+const string dst = "camera.bmp";
 
 void main()
 {
@@ -25,7 +32,12 @@ void main()
 	Mat H = calibration(board_w, board_h, measure, src_name, dst_name);
 	Mat result = changePicture(src_name, dst_name, H);
 
-	imshow("result", result);
+	ofstream fout;
+	fout.open("cali.Mat");
+
+	fout << H;
+
+	//imshow("result", result);
 	imwrite("result.bmp", result);
 	system("pause");
 }
