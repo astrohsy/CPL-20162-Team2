@@ -1,6 +1,6 @@
 /*	MeshGenerator
 작성 : 20160924 07:56 김미수
-수정 : 20161024 20:07 김미수
+수정 : 20161120 05:13 김미수
 */
 #pragma once
 #pragma warning(disable:4996)
@@ -15,10 +15,12 @@
 #include <thread>
 #include <opencv2\core\core.hpp>
 #include <opencv2\highgui\highgui.hpp>
+#include <opencv2\imgproc\imgproc.hpp>
 
 // 20161106-
 #define DEPTH_WIDTH 480
 #define DEPTH_HEIGHT 360
+#define MODEL_SCALE 4
 #define RGB_WIDTH 1920
 #define RGB_HEIGHT 1080
 #define FRAME_RATE 30
@@ -29,12 +31,15 @@ using namespace cv;
 
 typedef struct
 {
-	bool isThere;
+	//	bool isThere;
 	int vtrNum;
 } Vertice;
 
+//Vertice vtrArr[MODEL_HEIGHT][MODEL_WIDTH];
+
 // PXCImage -> Mat로 변환하는 함수
-void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
+void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg)
+{
 	int cvDataType;
 	int cvDataWidth;
 
@@ -43,7 +48,8 @@ void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
 	inImg->AcquireAccess(PXCImage::ACCESS_READ, &data);
 	PXCImage::ImageInfo imgInfo = inImg->QueryInfo();
 
-	switch (data.format) {
+	switch (data.format)
+	{
 		/* STREAM_TYPE_COLOR */
 	case PXCImage::PIXEL_FORMAT_YUY2: /* YUY2 image  */
 	case PXCImage::PIXEL_FORMAT_NV12: /* NV12 image */
@@ -94,83 +100,307 @@ void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
 
 	inImg->ReleaseAccess(&data);
 }
+//
+//// 20161106-
+//// Realsense 카메라에서 받은 뎁스 영상(mat)를 PLY로 변환(메쉬 생성)
+//// 인풋은 480*360, cvDataType = CV_16U; cvDataWidth = 2; 임.
+//void mat2Ply(Mat image)
+//{
+//	int x = 0, y = 0;
+//	unsigned short z = 0;
+//	int vtrAmount = 0;
+//	int triAmount = 0;
+//
+//	Vertice **vtrArr;
+//	vtrArr = new Vertice*[DEPTH_HEIGHT * MODEL_SCALE];
+//	for (int i = 0; i < DEPTH_HEIGHT * MODEL_SCALE; i++)
+//	{
+//		vtrArr[i] = new Vertice[DEPTH_WIDTH * MODEL_SCALE];
+//	}
+//	FILE* fPtr;
+//	string header = "ply\n";
+//	string content = "";
+//	char temp[100];
+//	char textureFile[50] = "rgb.bmp";
+//
+////	memset(vtrArr, 0, sizeof(Vertice) * DEPTH_WIDTH * MODEL_SCALE * DEPTH_HEIGHT * MODEL_SCALE);
+//	/*
+//	for (y = 0; y < image.rows; y++)
+//	{
+//		for (x = 0; x < image.cols; x++)
+//		{
+//			z = image.at<unsigned short>(y, x);
+//			if (z > USHRT_MAX / 320 && z < USHRT_MAX / 80)
+//			{
+//				// 텍스쳐 위치 관련은 여기서. u--일수록 텍스쳐가 오른쪽(열었을 때)으로 밀림.
+//				// Texture coordinate가 아주 정확한 건 아님. 마음에 안 들면 4, 5번째 %f를 변경하길 바람.
+//				sprintf(temp, "%f %f %f %f %f\n",
+//					(float)x / 300 / MODEL_SCALE, -(float)y / 300 / MODEL_SCALE, -(float)z / USHRT_MAX * 180, 0.06728 + ((float)(x + 1)) / (DEPTH_WIDTH * MODEL_SCALE) * 3 / 4, -0.0101 - ((float)(y + 1)) / (DEPTH_HEIGHT * MODEL_SCALE));
+//				content += temp;
+//				vtrArr[y][x].isThere = true;
+//				vtrArr[y][x].vtrNum = vtrAmount;
+//				vtrAmount++;
+//			}
+//		}
+//	}
+//	*/
+//	for (y = 0; y < image.rows; y++)
+//	{
+//		for (x = 0; x < image.cols; x++)
+//		{
+//			z = image.at<unsigned short>(y, x);
+//			if (/*z > 0*/z > USHRT_MAX / 320 && z < USHRT_MAX / 80)
+//			{
+//				// 텍스쳐 위치 관련은 여기서. u--일수록 텍스쳐가 오른쪽(열었을 때)으로 밀림. 
+//				// Texture coordinate가 아주 정확한 건 아님. 마음에 안 들면 4, 5번째 %f를 변경하길 바람.
+//
+//				sprintf(temp, "%f %f %f %f %f\n",
+//					(float)x / 300 / MODEL_SCALE, -(float)y / 300 / MODEL_SCALE, -(float)z / USHRT_MAX * 180, 0.06728 + ((float)(x + 1)) / (DEPTH_WIDTH * MODEL_SCALE) * 3 / 4, -0.0101 - ((float)(y + 1)) / (DEPTH_HEIGHT * MODEL_SCALE));
+//				content += temp;
+//				vtrArr[y][x].vtrNum = vtrAmount;
+//				vtrAmount++;
+//			}
+//			else
+//			{
+//				vtrArr[y][x].vtrNum = -1;
+//			}
+//		}
+//	}
+//	/*
+//	//  face 생성
+//	for (y = 0; y < image.rows - 1; y++)
+//	{
+//		for (x = 0; x < image.cols - 1; x++)
+//		{
+//			bool firstTry = false;
+//
+//			if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x].isThere == true)
+//			{
+//				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//				content += temp;
+//				firstTry = true;
+//				triAmount++;
+//			}
+//			if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x + 1].isThere == true)
+//			{
+//				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
+//				content += temp;
+//				firstTry = true;
+//				triAmount++;
+//			}
+//
+//			if (firstTry == false)
+//			{
+//				if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x + 1].isThere == true)
+//				{
+//					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//					content += temp;
+//					triAmount++;
+//				}
+//				if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x].isThere == true)
+//				{
+//					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//					content += temp;
+//					triAmount++;
+//				}
+//			}
+//		}
+//	}
+//	*/
+//	//  face 생성
+//	for (y = 0; y < image.rows - 1; y++)
+//	{
+//		for (x = 0; x < image.cols - 1; x++)
+//		{
+//			bool firstTry = false;
+//
+//			if (vtrArr[y][x].vtrNum != -1 && vtrArr[y][x + 1].vtrNum != -1 && vtrArr[y + 1][x].vtrNum != -1)
+//			{
+//				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//				content += temp;
+//				firstTry = true;
+//				triAmount++;
+//			}
+//			if (vtrArr[y + 1][x].vtrNum != -1 && vtrArr[y + 1][x + 1].vtrNum != -1 && vtrArr[y][x + 1].vtrNum != -1)
+//			{
+//				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
+//				content += temp;
+//				firstTry = true;
+//				triAmount++;
+//			}
+//
+//			if (firstTry == false)
+//			{
+//				if (vtrArr[y][x].vtrNum != -1 && vtrArr[y][x + 1].vtrNum != -1 && vtrArr[y + 1][x + 1].vtrNum != -1)
+//				{
+//					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//					content += temp;
+//					triAmount++;
+//				}
+//				if (vtrArr[y + 1][x].vtrNum != -1 && vtrArr[y + 1][x + 1].vtrNum != -1 && vtrArr[y][x].vtrNum != -1)
+//				{
+//					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
+//					content += temp;
+//					triAmount++;
+//				}
+//			}
+//		}
+//	}
+//
+//	// 헤더 선언
+//	header += "format ascii 1.0\n";
+//	sprintf(temp, "comment TextureFile %s\n", textureFile);
+//	header += temp;
+//	sprintf(temp, "element vertex %d\n", vtrAmount);
+//	header += temp;
+//	header += "property float x\n";
+//	header += "property float y\n";
+//	header += "property float z\n";
+//	header += "property float texture_u\n";
+//	header += "property float texture_v\n";
+//	sprintf(temp, "element face %d\n", triAmount);
+//	header += temp;
+//	header += "property list uchar int vertex_indices\n";
+//	header += "end_header\n";
+//
+//	cout << header;
+//
+//	// ply로 출력하는 부분
+//	fPtr = fopen("mesh.ply", "wt+");
+//
+//	fprintf(fPtr, "%s", header.c_str());
+//	fprintf(fPtr, "%s", content.c_str());
+//
+//	fclose(fPtr);
+//
+//	delete[] vtrArr;
+//}
+//// -20161106
 
-// 20161106-
 // Realsense 카메라에서 받은 뎁스 영상(mat)를 PLY로 변환(메쉬 생성)
-// 인풋은 480*360, cvDataType = CV_16U; cvDataWidth = 2; 임.
+// 인풋은 1920*1440, cvDataType = CV_16U; cvDataWidth = 2; 임.
 void mat2Ply(Mat image)
 {
 	int x = 0, y = 0;
 	unsigned short z = 0;
 	int vtrAmount = 0;
 	int triAmount = 0;
+
+	Vertice **vtrArr;
+	vtrArr = new Vertice*[2];
+	for (int i = 0; i < 2; i++)
+	{
+		vtrArr[i] = new Vertice[DEPTH_WIDTH * MODEL_SCALE];
+	}
 	FILE* fPtr;
 	string header = "ply\n";
 	string content = "";
+	string faceContent = "";
 	char temp[100];
 	char textureFile[50] = "rgb.bmp";
 
-	Vertice vtrArr[DEPTH_HEIGHT][DEPTH_WIDTH];
-	memset(vtrArr, 0, sizeof(Vertice) * DEPTH_WIDTH * DEPTH_HEIGHT);
-
-	for (y = 0; y < image.rows; y++)
+	for (y = 0; y < image.rows - 1; y++)
 	{
 		for (x = 0; x < image.cols; x++)
 		{
 			z = image.at<unsigned short>(y, x);
-			if (z > 0 && z < USHRT_MAX / 80)
+			if (/*z > 0*/z > USHRT_MAX / 320 && z < USHRT_MAX / 80)
 			{
 				// 텍스쳐 위치 관련은 여기서. u--일수록 텍스쳐가 오른쪽(열었을 때)으로 밀림. 
 				// Texture coordinate가 아주 정확한 건 아님. 마음에 안 들면 4, 5번째 %f를 변경하길 바람.
-				sprintf(temp, "%f %f %f %f %f\n", 
-					(float)x / 300, -(float)y / 300, -(float)z / USHRT_MAX * 180, 0.04828+((float)(x+1))/DEPTH_WIDTH*3/4, -0.0101-((float)(y + 1)) / DEPTH_HEIGHT);
+
+				sprintf(temp, "%f %f %f %f %f\n",
+					(float)x / 300 / MODEL_SCALE, -(float)y / 300 / MODEL_SCALE, -(float)z / USHRT_MAX * 150, 0.06728 + ((float)(x + 1)) / (DEPTH_WIDTH * MODEL_SCALE) * 3 / 4, -0.0101 - ((float)(y + 1)) / (DEPTH_HEIGHT * MODEL_SCALE));
 				content += temp;
-				vtrArr[y][x].isThere = true;
-				vtrArr[y][x].vtrNum = vtrAmount;
+				vtrArr[y%2][x].vtrNum = vtrAmount;
 				vtrAmount++;
+			}
+			else
+			{
+				vtrArr[y%2][x].vtrNum = -1;
+			}
+		}
+
+		if (y % 2 == 1)
+		{
+			for (x = 0; x < image.cols - 1; x++)
+			{
+				bool firstTry = false;
+
+				if (vtrArr[(y - 1)%2][x].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1 && vtrArr[y % 2][x].vtrNum != -1)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+					faceContent += temp;
+					firstTry = true;
+					triAmount++;
+				}
+				if (vtrArr[y % 2][x].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum);
+					faceContent += temp;
+					firstTry = true;
+					triAmount++;
+				}
+
+				if (firstTry == false)
+				{
+					if (vtrArr[(y - 1) % 2][x].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+						faceContent += temp;
+						triAmount++;
+					}
+					if (vtrArr[y % 2][x].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1 && vtrArr[(y - 1) % 2][x].vtrNum != -1)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+						faceContent += temp;
+						triAmount++;
+					}
+				}
+			}
+		}
+		else if(y%2 == 0 && y!=0)
+		{
+			for (x = 0; x < image.cols - 1; x++)
+			{
+				bool firstTry = false;
+
+				if (vtrArr[(y - 1) % 2][x].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1 && vtrArr[y % 2][x].vtrNum != -1)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+					faceContent += temp;
+					firstTry = true;
+					triAmount++;
+				}
+				if (vtrArr[y % 2][x].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1)
+				{
+					sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum);
+					faceContent += temp;
+					firstTry = true;
+					triAmount++;
+				}
+
+				if (firstTry == false)
+				{
+					if (vtrArr[(y - 1) % 2][x].vtrNum != -1 && vtrArr[(y - 1) % 2][x + 1].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+						faceContent += temp;
+						triAmount++;
+					}
+					if (vtrArr[y % 2][x].vtrNum != -1 && vtrArr[y % 2][x + 1].vtrNum != -1 && vtrArr[(y - 1) % 2][x].vtrNum != -1)
+					{
+						sprintf(temp, "3 %d %d %d\n", vtrArr[y % 2][x].vtrNum, vtrArr[y % 2][x + 1].vtrNum, vtrArr[(y - 1) % 2][x].vtrNum);
+						faceContent += temp;
+						triAmount++;
+					}
+				}
 			}
 		}
 	}
 
 	//  face 생성
-	for (y = 0; y < image.rows - 1; y++)
-	{
-		for (x = 0; x < image.cols - 1; x++)
-		{
-			bool firstTry = false;
 
-			if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x].isThere == true)
-			{
-				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum );
-				content += temp;
-				firstTry = true;
-				triAmount++;
-			}
-			if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x + 1].isThere == true)
-			{
-				sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum);
-				content += temp;
-				firstTry = true;
-				triAmount++;
-			}
-
-			if (firstTry == false)
-			{
-				if (vtrArr[y][x].isThere == true && vtrArr[y][x + 1].isThere == true && vtrArr[y + 1][x + 1].isThere == true)
-				{
-					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x + 1].vtrNum, vtrArr[y][x].vtrNum );
-					content += temp;
-					triAmount++;
-				}
-				if (vtrArr[y + 1][x].isThere == true && vtrArr[y + 1][x + 1].isThere == true && vtrArr[y][x].isThere == true)
-				{
-					sprintf(temp, "3 %d %d %d\n", vtrArr[y + 1][x].vtrNum, vtrArr[y + 1][x + 1].vtrNum, vtrArr[y][x].vtrNum);
-					content += temp;
-					triAmount++;
-				}
-			}
-		}
-	}
 
 	// 헤더 선언
 	header += "format ascii 1.0\n";
@@ -195,16 +425,21 @@ void mat2Ply(Mat image)
 
 	fprintf(fPtr, "%s", header.c_str());
 	fprintf(fPtr, "%s", content.c_str());
+	fprintf(fPtr, "%s", faceContent.c_str());
 
 	fclose(fPtr);
+
+	for (int i = 0; i < 2; i++)
+		delete[] vtrArr[i];
+	delete[] vtrArr;
 }
-// -20161106
 
 int main(void)
 {
 	Mat rgbMat;
 	Mat depthMat;
 	bool doSave = false;
+	Mat temp(Size(DEPTH_WIDTH * MODEL_SCALE, DEPTH_HEIGHT * MODEL_SCALE), CV_16U);
 
 	PXCSession* session = PXCSession::CreateInstance();
 	PXCSession::ImplVersion ver = session->QueryVersion();
@@ -264,7 +499,9 @@ int main(void)
 		if (doSave == true)
 		{
 			imwrite("rgb.bmp", rgbMat); //Scaling 안 해줬음 아직
-			mat2Ply(depthMat);
+			cv::resize(depthMat, temp, cv::Size(DEPTH_WIDTH * MODEL_SCALE, DEPTH_HEIGHT * MODEL_SCALE), 0, 0, CV_INTER_NN);
+			imwrite("depth.bmp", temp);
+			mat2Ply(temp);
 			cout << "Save Complete" << endl;
 			break;
 		}
