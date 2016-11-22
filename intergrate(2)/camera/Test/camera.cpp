@@ -215,7 +215,7 @@ void Camera::releaseSDK()
 	EdsTerminateSDK();
 }
 
-void Camera::takePicture()
+char * Camera::takePicture()
 {
 	EdsInt32 saveTarget = kEdsSaveTo_Host;
 	err = EdsSetPropertyData(camera, kEdsPropID_SaveTo, 0, 4, &saveTarget);
@@ -233,4 +233,6 @@ void Camera::takePicture()
 	EdsCreateFileStream(ch_dest, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_ReadWrite, 0);
 
 	EdsSendCommand(camera, kEdsCameraCommand_TakePicture, 0);
+
+	return c_rgb;
 }

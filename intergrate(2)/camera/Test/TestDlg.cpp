@@ -26,6 +26,12 @@
 #include <opencv2\highgui\highgui.hpp>
 #include <string.h>
 
+const int w = 8;
+const int h = 5;
+const float mm = 3.5;
+const string src = "camera.bmp";
+const string dst = "rgb.bmp";
+
 int d_number = 0;
 char s_number[10];
 char d_rgb[20];
@@ -42,7 +48,7 @@ void evf(Camera dslr);
 void mat2Ply(Mat image);
 void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg);
 
-int depth_capture(void);
+char * depth_capture(void);
 
 ///////////////////////////////////////////////
 #ifdef _DEBUG
@@ -54,6 +60,7 @@ CImage *mfcImg;
 Camera dslr;
 Mat frame1;
 int cnt;
+Calibration cali;
 
 ///////////////////////
 Mat rgbMat;
@@ -126,6 +133,9 @@ END_MESSAGE_MAP()
 BOOL CTestDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	//calibration
+	cali.CalibrationInit(w, h, mm, src, dst);
 	
 	///dslr
 	dslr.initializeSDK();
@@ -345,19 +355,26 @@ void CTestDlg::OnBnClickedCancel()
 	//cap1->release();
 }
 
-
 void CTestDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
 	//CDialogEx::OnOK();
-	dslr.takePicture();
-	depth_capture();
+	char * src = dslr.takePicture();
+	char * dst = depth_capture();
+
+	if (cali.getH().size().height == 0){
+		cali.loadResult();
+	}
+	Mat result = cali.changePicture(src, dst);
+
+	char resultName[20];
+	sprintf(resultName, "c_%s", src);
+	imwrite(resultName, result);
 }
 
 void ConvertPXCImageToOpenCVMat(PXCImage *inImg, Mat *outImg) {
 	int cvDataType;
 	int cvDataWidth;
-
 
 	PXCImage::ImageData data;
 	inImg->AcquireAccess(PXCImage::ACCESS_READ, &data);
@@ -522,7 +539,7 @@ void mat2Ply(Mat image)
 
 	fclose(fPtr);
 }
-int depth_capture(void)
+char * depth_capture(void)
 {
 	// OpenCV 창 생성
 	//UtilRender* renderColor = new UtilRender(L"COLOR STREAM");
@@ -541,7 +558,8 @@ int depth_capture(void)
 		imwrite(d_rgb, rgbMat); //Scaling 안 해줬음 아직
 		mat2Ply(depthMat);
 		//break;%
-		return 0;
+	
+		return d_rgb;
 }
 
 
