@@ -115,6 +115,7 @@ void CTestDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICTURE, m_picture);
+	DDX_Control(pDX, IDC_PICTURE2, m_picture2);
 }
 
 BEGIN_MESSAGE_MAP(CTestDlg, CDialogEx)
@@ -246,6 +247,7 @@ HCURSOR CTestDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+//참고한 사이트 http://webnautes.tistory.com/824
 void displayImage(CStatic * mPicture, Mat frame)
 {
 	CImage *cimage_mfc;
@@ -359,10 +361,7 @@ void CTestDlg::OnTimer(UINT_PTR nIDEvent)
 	// TODO: Add your message handler code here and/or call default
 
 	CDialogEx::OnTimer(nIDEvent);
-
-	//참고한 사이트 http://stackoverflow.com/a/29006218  
-	//참고한 사이트 http://webnautes.tistory.com/824
-
+	
 	//cap1->read(frame1);
 	frame1 = dslr.downloadEvfData();
 	/////
@@ -386,7 +385,9 @@ void CTestDlg::OnTimer(UINT_PTR nIDEvent)
 	waitKey(33);
 
 	displayImage(&m_picture, frame1);
+	displayImage(&m_picture2, rgbMat);
 
+	//참고한 사이트 http://stackoverflow.com/a/29006218  
 	/*RECT r;
 	m_picture.GetClientRect(&r);
 	cv::Size winSize(r.right, r.bottom);

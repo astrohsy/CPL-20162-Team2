@@ -1,4 +1,4 @@
-﻿빌드 시작: 2016-11-23 오전 5:46:28
+﻿빌드 시작: 2016-11-23 오전 5:54:08
      1>2 노드의 "C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Test\Test.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /I./../../../opencv\build\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Test.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Test.cpp TestDlg.cpp
@@ -46,8 +46,9 @@
      1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(665): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
          코드를 생성하고 있습니다...
-         건너뛰고 있습니다... (관련된 변경 내용 없음)
+         컴파일하고 있습니다...
          Test.cpp
+         코드를 생성하고 있습니다...
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.exe" /INCREMENTAL /NOLOGO /LIBPATH:./../../EDSDK/Library /LIBPATH:./../../../opencv\build\x86\vc12\lib libpxcmd_d.lib libpxcutilsmd_d.lib EDSDK.lib opencv_ts300.lib opencv_ts300d.lib opencv_world300.lib opencv_world300d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.pdb" /SUBSYSTEM:WINDOWS /STACK:"2000000" /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.lib" /MACHINE:X86 Debug\Test.res
          Debug\calibration.obj
@@ -60,4 +61,4 @@
 
 빌드했습니다.
 
-경과 시간: 00:00:02.10
+경과 시간: 00:00:04.13
