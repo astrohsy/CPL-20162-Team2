@@ -1,6 +1,26 @@
 #include "calibration.h"
 
+Calibration::Calibration()
+{
+	board_w = 0;
+	board_h = 0;
+	measure = 0;
+	src_name = "";
+	dst_name = "";
+	H = NULL;
+}
+
 Calibration::Calibration(int w, int h, float mm, string src, string dst)
+{
+	board_w = w;
+	board_h = h;
+	measure = mm;
+	src_name = src;
+	dst_name = dst;
+	H = NULL;
+}
+
+void Calibration::CalibrationInit(int w, int h, float mm, string src, string dst)
 {
 	board_w = w;
 	board_h = h;

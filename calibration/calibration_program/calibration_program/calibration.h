@@ -22,8 +22,10 @@ private:
 
 	const string result_name = "hormography.hr";
 public:
-	Calibration(int w, int h, float mm, string s, string d);
+	Calibration();
+	Calibration(int w, int h, float mm, string src, string dst);
 
+	void CalibrationInit(int w, int h, float mm, string src, string dst);
 	void run_calibration();
 	Mat changePicture();
 	void saveResult();
