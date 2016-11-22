@@ -24,8 +24,8 @@ public:
 	Calibration(int w, int h, float mm);
 
 	void CalibrationInit(int w, int h, float mm);
-	void run_calibration(char * srcf, char * dstf);
-	Mat changePicture(char * srcf, char * dstf);
+	void run_calibration(char * src_name, char * dst_name);
+	Mat changePicture(char * src_name, char * dst_name);
 	void saveResult();
 	void loadResult();
 

@@ -5,7 +5,7 @@ Calibration::Calibration()
 	board_w = 0;
 	board_h = 0;
 	measure = 0;
-	H = Mat::zeros(Size(0, 0), 0);
+	H = NULL;
 }
 
 Calibration::Calibration(int w, int h, float mm)
@@ -13,7 +13,7 @@ Calibration::Calibration(int w, int h, float mm)
 	board_w = w;
 	board_h = h;
 	measure = mm;
-	H = Mat::zeros(Size(0, 0), 0);
+	H = NULL;
 }
 
 void Calibration::CalibrationInit(int w, int h, float mm)
@@ -21,7 +21,7 @@ void Calibration::CalibrationInit(int w, int h, float mm)
 	board_w = w;
 	board_h = h;
 	measure = mm;
-	H = Mat::zeros(Size(0, 0), 0);
+	H = NULL;
 }
 
 void Calibration::run_calibration(char * src_name, char * dst_name)
@@ -63,10 +63,10 @@ void Calibration::run_calibration(char * src_name, char * dst_name)
 	H = findHomography(src_corners, dst_corners);
 }
 
-Mat Calibration::changePicture(char * srcf, char * dstf)
+Mat Calibration::changePicture(char * src_name, char * dst_name)
 {
-	Mat src = imread(srcf);
-	Mat dst = imread(dstf);
+	Mat src = imread(src_name);
+	Mat dst = imread(dst_name);
 
 	Mat ret;
 
