@@ -55,12 +55,13 @@ void evf(Camera dslr){
 
 	// live view
 	while (1){
-		dslr.downloadEvfData();
+		Mat image = dslr.downloadEvfData();
 		int c = cvWaitKey(10);
 
 		if (takingPicture){
 			takingPicture = false;
 			dslr.takePicture();
+			saveMat(image);
 		}
 
 		if (programExit)

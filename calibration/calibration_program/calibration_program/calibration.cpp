@@ -66,6 +66,7 @@ void Calibration::saveResult()
 	fout.open(result_name);
 
 	fout << H.type() << endl;
+	
 	fout.precision(15);
 
 	for (int i = 0; i < 3; i++){

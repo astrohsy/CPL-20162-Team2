@@ -120,7 +120,7 @@ EdsError Camera::endLiveview()
 	return err;
 }
 
-EdsError Camera::downloadEvfData()
+Mat Camera::downloadEvfData()
 {
 
 	EdsError err = EDS_ERR_OK;
@@ -149,11 +149,11 @@ EdsError Camera::downloadEvfData()
 
 	}
 
+	Mat image;
 	// Display image
 	if (data != NULL)
 	{
 		EdsGetLength(stream, &size);
-		Mat image;
 		Mat img = Mat(coords.height, coords.width, CV_8UC3, data);
 		image = imdecode(img, CV_LOAD_IMAGE_COLOR);
 		imshow("main", image);
@@ -171,7 +171,8 @@ EdsError Camera::downloadEvfData()
 		EdsRelease(evfImage);
 		evfImage = NULL;
 	}
-	return err;
+
+	return image;
 }
 
 bool Camera::isOK()
@@ -220,6 +221,12 @@ void Camera::takePicture()
 	string str_path = "./Img.jpg";
 	const char* ch_dest = str_path.c_str();
 	EdsCreateFileStream(ch_dest, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_ReadWrite, 0);
+	
 
 	EdsSendCommand(camera, kEdsCameraCommand_TakePicture, 0);
+}
+
+void saveMat(Mat image)
+{
+	imwrite("camera.bmp", image);
 }

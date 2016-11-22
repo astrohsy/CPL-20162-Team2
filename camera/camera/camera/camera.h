@@ -12,6 +12,8 @@
 using namespace cv;
 using namespace std;
 
+void saveMat(Mat image);
+
 class Camera{
 private:
 	EdsError err;
@@ -37,7 +39,7 @@ public:
 	EdsError getFirstCamera();
 	EdsError startLiveview();
 	EdsError endLiveview();
-	EdsError downloadEvfData();
+	Mat downloadEvfData();
 
 	void takePicture();
 
