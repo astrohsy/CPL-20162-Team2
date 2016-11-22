@@ -25,7 +25,7 @@ typedef struct
 
 ////////////////////// depth sensor
 
-
+void displayImage(CStatic * mPicture, Mat frame);
 
 // CTestDlg 대화 상자
 class CTestDlg : public CDialogEx
@@ -39,7 +39,6 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
 
 // 구현입니다.
 protected:
@@ -56,6 +55,7 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedCancel();
 	CStatic m_picture;
+	CStatic m_picture2;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnStnClickedPicture();
 	afx_msg void OnBnClickedCali();
