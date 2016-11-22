@@ -39,7 +39,7 @@ public:
 	EdsError endLiveview();
 	Mat downloadEvfData();
 
-	void takePicture();
+	char * takePicture();
 
 	void initializeSDK();
 	bool isOK();

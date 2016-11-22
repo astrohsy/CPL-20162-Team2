@@ -58,4 +58,5 @@ public:
 	CStatic m_picture;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnStnClickedPicture();
+	afx_msg void OnBnClickedCali();
 };

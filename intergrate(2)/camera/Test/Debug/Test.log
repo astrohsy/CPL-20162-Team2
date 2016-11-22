@@ -1,60 +1,74 @@
-﻿Build started 2016-11-18 오후 5:08:07.
-     1>Project "C:\Users\Kim\CPL\intergrate\camera\Test\Test.vcxproj" on node 2 (Build target(s)).
+﻿빌드 시작: 2016-11-23 오전 3:52:15
+     1>2 노드의 "C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Test\Test.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /I./../../../opencv\build\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Test.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt TestDlg.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /I./../../../opencv\build\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\Test.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+     1>c:\users\kshy9\cpl\cpl-20162-team2\opencv\build\include\opencv2\core\mat.hpp(1918): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\opencv\build\include\opencv2\core\persistence.hpp : warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\opencv\build\include\opencv2\core\utility.hpp : warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I./../../EDSDK/Header /I./Camera /I./Command /I./Class /I./../../../opencv\build\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Test.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Test.cpp TestDlg.cpp calibration.cpp camera.cpp
+         calibration.cpp
          TestDlg.cpp
-     1>c:\users\kim\cpl\opencv\build\include\opencv2\core\mat.hpp(1965): warning C4819: The file contains a character that cannot be represented in the current code page (949). Save the file in Unicode format to prevent data loss
-     1>c:\users\kim\cpl\opencv\build\include\opencv2\core\persistence.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (949). Save the file in Unicode format to prevent data loss
-     1>c:\users\kim\cpl\opencv\build\include\opencv2\core\utility.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (949). Save the file in Unicode format to prevent data loss
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(431): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(446): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(464): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(471): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(481): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(487): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(497): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(499): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(506): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(513): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(514): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(515): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(518): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : see declaration of 'fopen'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(530): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(532): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(533): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(534): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(536): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : see declaration of 'strcpy'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(537): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
-     1>c:\users\kim\cpl\intergrate\camera\test\testdlg.cpp(538): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : see declaration of 'strcat'
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(371): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(448): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : 'strcpy' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(463): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(481): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(488): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(498): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(504): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(514): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(516): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(523): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(530): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : 'strcpy' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(531): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(532): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(535): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(211) : 'fopen' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(547): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : 'sprintf' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(549): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : 'strcpy' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(550): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(551): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(553): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(112) : 'strcpy' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(554): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+     1>c:\users\kshy9\cpl\cpl-20162-team2\intergrate(2)\camera\test\testdlg.cpp(555): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(118) : 'strcat' 선언을 참조하십시오.
+         코드를 생성하고 있습니다...
+         컴파일하고 있습니다...
+         Test.cpp
+         코드를 생성하고 있습니다...
+         건너뛰고 있습니다... (관련된 변경 내용 없음)
+         camera.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /l"0x0412" /IDebug\ /nologo /fo"Debug\Test.res" Test.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Kim\CPL\intergrate\camera\Debug\Test.exe" /INCREMENTAL /NOLOGO /LIBPATH:./../../EDSDK/Library /LIBPATH:./../../../opencv\build\x86\vc12\lib libpxcmd_d.lib libpxcutilsmd_d.lib EDSDK.lib opencv_ts300.lib opencv_ts300d.lib opencv_world300.lib opencv_world300d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\Kim\CPL\intergrate\camera\Debug\Test.pdb" /SUBSYSTEM:WINDOWS /STACK:"2000000" /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Kim\CPL\intergrate\camera\Debug\Test.lib" /MACHINE:X86 Debug\Test.res
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.exe" /INCREMENTAL /NOLOGO /LIBPATH:./../../EDSDK/Library /LIBPATH:./../../../opencv\build\x86\vc12\lib libpxcmd_d.lib libpxcutilsmd_d.lib EDSDK.lib opencv_ts300.lib opencv_ts300d.lib opencv_world300.lib opencv_world300d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.pdb" /SUBSYSTEM:WINDOWS /STACK:"2000000" /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.lib" /MACHINE:X86 Debug\Test.res
+         Debug\calibration.obj
          Debug\camera.obj
          Debug\stdafx.obj
          Debug\Test.obj
          Debug\TestDlg.obj
-         Test.vcxproj -> C:\Users\Kim\CPL\intergrate\camera\Debug\Test.exe
-     1>Done Building Project "C:\Users\Kim\CPL\intergrate\camera\Test\Test.vcxproj" (Build target(s)).
+         Test.vcxproj -> C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Debug\Test.exe
+     1>"C:\Users\kshy9\CPL\CPL-20162-Team2\intergrate(2)\camera\Test\Test.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
 
-Build succeeded.
+빌드했습니다.
 
-Time Elapsed 00:00:03.35
+경과 시간: 00:00:06.64
