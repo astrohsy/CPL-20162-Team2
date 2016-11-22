@@ -253,6 +253,14 @@ void displayImage(CStatic * mPicture, Mat frame)
 	CImage *cimage_mfc;
 	cimage_mfc = NULL;
 
+	RECT r;
+	mPicture->GetClientRect(&r);
+	cv::Size winSize(r.right, r.bottom);
+
+	Mat cvImgTmp;
+	cv::resize(frame, cvImgTmp, winSize);
+	frame = cvImgTmp.clone();
+
 	int bpp = 8 * frame.elemSize();
 	assert((bpp == 8 || bpp == 24 || bpp == 32));
 
@@ -282,11 +290,6 @@ void displayImage(CStatic * mPicture, Mat frame)
 		mat_temp = frame;
 	}
 
-
-	RECT r;
-	mPicture->GetClientRect(&r);
-	cv::Size winSize(r.right, r.bottom);
-
 	if (cimage_mfc)
 	{
 		cimage_mfc->ReleaseDC();
@@ -296,7 +299,6 @@ void displayImage(CStatic * mPicture, Mat frame)
 
 	cimage_mfc = new CImage();
 	cimage_mfc->Create(winSize.width, winSize.height, 24);
-
 
 	BITMAPINFO bitInfo;
 	bitInfo.bmiHeader.biBitCount = bpp;
@@ -311,10 +313,8 @@ void displayImage(CStatic * mPicture, Mat frame)
 	bitInfo.bmiHeader.biXPelsPerMeter = 0;
 	bitInfo.bmiHeader.biYPelsPerMeter = 0;
 
-
 	// Image is bigger or smaller than into destination rectangle
 	// we use stretch in full rect
-
 	if (mat_temp.cols == winSize.width  && mat_temp.rows == winSize.height)
 	{
 		// source and destination have same size
@@ -384,8 +384,15 @@ void CTestDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 	waitKey(33);
 
-	displayImage(&m_picture, frame1);
-	displayImage(&m_picture2, rgbMat);
+	static int count_wait = 0;
+	if (count_wait < 1500){
+		count_wait += 33;
+	}
+	else{
+		displayImage(&m_picture, frame1);
+		//displayImage(&m_picture2, rgbMat);
+	}
+
 
 	//참고한 사이트 http://stackoverflow.com/a/29006218  
 	/*RECT r;
