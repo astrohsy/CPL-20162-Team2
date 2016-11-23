@@ -10,7 +10,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 // CTestApp
 
 BEGIN_MESSAGE_MAP(CTestApp, CWinApp)

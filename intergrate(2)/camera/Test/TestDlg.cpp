@@ -1,7 +1,6 @@
 
 // TestDlg.cpp : 구현 파일
 //
-
 #include "stdafx.h"
 #include "Test.h"
 #include "TestDlg.h"
@@ -166,7 +165,6 @@ BOOL CTestDlg::OnInitDialog()
 
 	mfcImg = NULL;
 	SetTimer(1000, 30, NULL);
-
 
 	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
