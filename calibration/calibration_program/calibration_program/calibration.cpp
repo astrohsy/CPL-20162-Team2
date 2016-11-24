@@ -1,11 +1,41 @@
 #include "calibration.h"
 
-Mat calibration(int board_w, int board_h, float measure, string src_name, string dst_name)
+Calibration::Calibration()
+{
+	board_w = 0;
+	board_h = 0;
+	measure = 0;
+	src_name = "";
+	dst_name = "";
+	H = NULL;
+}
+
+Calibration::Calibration(int w, int h, float mm, string src, string dst)
+{
+	board_w = w;
+	board_h = h;
+	measure = mm;
+	src_name = src;
+	dst_name = dst;
+	H = NULL;
+}
+
+void Calibration::CalibrationInit(int w, int h, float mm, string src, string dst)
+{
+	board_w = w;
+	board_h = h;
+	measure = mm;
+	src_name = src;
+	dst_name = dst;
+	H = NULL;
+}
+
+void Calibration::run_calibration()
 {
 	vector< vector< Point2f> > imagePoints;
 	vector< vector< Point3f> > objectPoints;
 	Size imageSize;
-	
+
 	//image load   
 	Mat srcgray;
 	Mat srcimg2;
@@ -36,12 +66,10 @@ Mat calibration(int board_w, int board_h, float measure, string src_name, string
 		cornerSubPix(dstgray, dst_corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 	}
 
-	Mat H = findHomography(src_corners, dst_corners);
-
-	return H;
+	H = findHomography(src_corners, dst_corners);
 }
 
-Mat changePicture(string src_name, string dst_name, Mat H)
+Mat Calibration::changePicture()
 {
 	Mat src = imread(src_name);
 	Mat dst = imread(dst_name);
@@ -50,4 +78,42 @@ Mat changePicture(string src_name, string dst_name, Mat H)
 
 	warpPerspective(src, ret, H, dst.size());
 	return ret;
+}
+
+void Calibration::saveResult()
+{
+	ofstream fout;
+	fout.open(result_name);
+
+	fout << H.type() << endl;
+	
+	fout.precision(15);
+
+	for (int i = 0; i < 3; i++){
+		for (int k = 0; k < 3; k++){
+			fout << H.at<double>(i, k) << endl;
+		}
+	}
+}
+
+Mat Calibration::getH()
+{
+	return H;
+}
+
+void Calibration::loadResult()
+{
+	ifstream fin;
+	fin.open(result_name);
+	
+	int type;
+	fin >> type;
+
+	H = Mat::zeros(Size(3, 3), type);
+
+	for (int i = 0; i < 3; i++){
+		for (int k = 0; k < 3; k++){
+			fin >> H.at<double>(i, k);
+		}
+	}
 }

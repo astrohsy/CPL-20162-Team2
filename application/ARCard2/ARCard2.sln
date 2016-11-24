@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARCard2.CSharp", "ARCard2.CSharp.csproj", "{3AED8741-B130-D7EA-AF69-5118A6441CFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ARCard2.CSharp.Editor", "ARCard2.CSharp.Editor.csproj", "{6CF2262A-D686-7711-9B58-B45BFFA513C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3AED8741-B130-D7EA-AF69-5118A6441CFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AED8741-B130-D7EA-AF69-5118A6441CFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AED8741-B130-D7EA-AF69-5118A6441CFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AED8741-B130-D7EA-AF69-5118A6441CFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CF2262A-D686-7711-9B58-B45BFFA513C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF2262A-D686-7711-9B58-B45BFFA513C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF2262A-D686-7711-9B58-B45BFFA513C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF2262A-D686-7711-9B58-B45BFFA513C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

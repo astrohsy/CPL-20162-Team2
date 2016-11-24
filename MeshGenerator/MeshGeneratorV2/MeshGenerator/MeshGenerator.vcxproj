@@ -109,6 +109,9 @@
       <AdditionalLibraryDirectories>C:\Program Files (x86)\OpenCV\build\x86\vc12\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_world300d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>10485760</StackReserveSize>
+      <HeapReserveSize>10485760</HeapReserveSize>
+      <HeapCommitSize>10485760</HeapCommitSize>
+      <StackCommitSize>10485760</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
