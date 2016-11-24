@@ -25,11 +25,9 @@
 #include <opencv2\highgui\highgui.hpp>
 #include <string.h>
 
-const int w = 8;
+const int w = 7;
 const int h = 5;
-const float mm = 3.5;
-const string src = "camera.bmp";
-const string dst = "rgb.bmp";
+const float mm = 2.6;
 
 int d_number = 0;
 char s_number[10];
