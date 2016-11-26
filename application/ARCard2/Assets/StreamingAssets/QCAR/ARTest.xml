@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
-    <ImageTarget name="9" size="91.000000 52.136322" />
+    <ImageTarget name="scanyou" size="91.000000 51.962822" />
     <ImageTarget name="8" size="91.000000 52.136322" />
-    <ImageTarget name="7" size="91.000000 53.083332" />
-    <ImageTarget name="6" size="91.000000 50.168842" />
-    <ImageTarget name="5" size="91.000000 50.593601" />
-    <ImageTarget name="4" size="91.000000 53.083332" />
     <ImageTarget name="3" size="91.000000 54.599998" />
     <ImageTarget name="2" size="91.000000 54.599998" />
     <ImageTarget name="1" size="91.000000 51.514366" />
